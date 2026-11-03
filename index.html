@@ -1,0 +1,1818 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- flow-rebuild template (Growth Audit, v3: + walkthrough video, phone view/QR, localization, paywall today vs proposed). Replace every double-brace placeholder, everything between
+     the SCREENS markers, and the CONTENT json. Rules that brand-check.py enforces are marked RULE.
+     Reference builds: eddieatadapty.github.io/datacamp-flow-rebuild-v2 · bterzic123.github.io/planner5d-flow-rebuild-v2 -->
+<title>Erly Growth Audit</title>
+<meta name="description" content="Five ideas to turn more Erly users into subscribers, each built into a clickable version of Erly's own onboarding. Prepared by Adapty.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- the APP's font (brand.json fonts, or the closest Google family) + a mono if the app shows code -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* BRAND:START — the only place the APP's colours are written as literals. RULE: every value here is
+   copied from brand.json / a sampled pixel of the app's own screens; never "improved". Used only inside the phone. */
+:root{
+  --b-primary:#000000;      /* black buttons */
+  --b-primary-ink:#ffffff;
+  --b-bg:#f0f0f0;           /* onboarding background */
+  --b-surface:#fcfcfc;      /* option rows, cards, bottom bar */
+  --b-white:#ffffff;        /* paywall background */
+  --b-ink:#000000;
+  --b-ink2:#5d5d5d;         /* onboarding sub copy */
+  --b-ink3:#909190;         /* paywall sub copy, Restore */
+  --b-line:#e2e2e2;         /* number chips */
+  --b-track:#bfbfbf;        /* progress track, unselected plan border */
+  --b-off:#b5b5b5;          /* disabled Continue */
+  --b-green:#34c558;        /* picked check */
+  --b-green2:#8dd19e;       /* picked row outline */
+  --b-pad:#e7e7e7;          /* signature pad, weekend days */
+  --b-lav:#f1ebf1;          /* streak day ring */
+  --b-orange:#f98b00;       /* trial timeline icons, goal time */
+  --b-orange2:#fbcc96;      /* trial timeline bar */
+  --b-grey:#949594;         /* timeline bar under billing */
+  --b-radius:20px;
+  --b-font:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;
+}
+/* BRAND:END */
+/* A second app family (e.g. a mono for code) is applied HERE, never in SCREENS css (brand-check allows only
+   var(--b-font) there). Prefix with .scr so it beats the screens' font shorthands, e.g.:
+   .scr .code,.scr .instr code{font-family:var(--b-mono)} */
+
+/* ================= the audit page — Adapty's, not the app's. Light, Apple-style. ================= */
+:root{
+  color-scheme:light;
+  --st-ground:#f5f5f7; --st-card:#ffffff; --st-ink:#1d1d1f; --st-ink2:#6e6e73; --st-ink3:#86868b;
+  --st-hair:rgba(0,0,0,.09); --st-link:#0066cc;
+  --st-accent:#0a0a0a;      /* dark brand colour of the APP: buttons, the outcome band */
+  --st-hi:#f8b142;          /* bright brand colour of the APP: outcome numbers on the band, idea dots */
+  --st-mark:rgba(248,177,66,.55); /* --st-hi at ~.5 alpha: the highlighter under impact numbers */
+  --st-font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+html,body{margin:0}
+body{background:var(--st-ground);color:var(--st-ink);font-family:var(--st-font);-webkit-font-smoothing:antialiased;font-size:17px;line-height:1.47}
+.au-wrap{max-width:1080px;margin:0 auto;padding-inline:22px}
+a{color:var(--st-link)}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--st-link);outline-offset:3px;border-radius:6px}
+mark{background:linear-gradient(transparent 62%,var(--st-mark) 62%,var(--st-mark) 92%,transparent 92%);color:inherit;padding:0 .04em}
+
+/* nav */
+.au-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:rgba(245,245,247,.8);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--st-hair)}
+.au-nav-in{max-width:1080px;margin:0 auto;padding-inline:22px;height:52px;display:flex;align-items:center;gap:26px}
+.au-brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.au-brand img{width:26px;height:26px;border-radius:7px;flex:none}
+.au-brand span{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.au-brand small{font-size:15px;font-weight:400;color:var(--st-ink2)}
+.au-nav a{font-size:13px;color:var(--st-ink);text-decoration:none;opacity:.82}
+.au-nav a:hover{opacity:1}
+@media (max-width:560px){.au-nav a.au-opt{display:none}.au-brand small{display:none}}
+
+/* hero */
+.au-top-hero{text-align:center;padding-top:clamp(56px,9vw,96px);overflow:hidden;position:relative}
+.au-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--st-ink);margin:0 0 14px}
+.au-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-display{font-size:clamp(60px,12vw,120px);line-height:.98;font-weight:700;letter-spacing:-.05em;margin:0}
+.au-lede{font-size:clamp(23px,3.4vw,34px);line-height:1.16;font-weight:600;letter-spacing:-.022em;max-width:760px;margin:22px auto 0;text-wrap:balance}
+.au-lede span{color:var(--st-ink2)}
+.au-byline{font-size:14px;color:var(--st-ink3);margin:18px 0 0}
+.au-ctas{display:flex;gap:26px;justify-content:center;align-items:center;margin-top:30px;flex-wrap:wrap}
+.au-btn{display:inline-block;background:var(--st-accent);color:#fff;border-radius:980px;padding:12px 23px;font-size:17px;font-weight:500;text-decoration:none;border:0;cursor:pointer}
+.au-btn:hover{filter:brightness(1.25)}
+.au-lnk{background:none;border:0;padding:0;color:var(--st-link);font-size:17px;text-decoration:none;cursor:pointer}
+.au-lnk::after{content:"\00a0›"}
+.au-lnk:hover{text-decoration:underline}
+.au-phones{display:flex;justify-content:center;align-items:flex-start;margin-top:clamp(40px,6vw,64px);height:clamp(300px,52vw,560px)}
+.au-hp{flex:none;border:0;padding:0;background:none;cursor:pointer;width:27%;max-width:290px;margin:0 -2.5%;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.au-hp img{display:block;width:100%;height:auto;filter:drop-shadow(0 28px 50px rgba(0,0,0,.2))}
+.au-hp.au-c{width:31%;max-width:330px;z-index:2}
+.au-hp.au-l{transform:translateY(12%) rotate(-5deg)}
+.au-hp.au-r{transform:translateY(12%) rotate(5deg)}
+.au-hp.au-l:hover{transform:translateY(9%) rotate(-5deg)}.au-hp.au-r:hover{transform:translateY(9%) rotate(5deg)}.au-hp.au-c:hover{transform:translateY(-3%)}
+
+/* sections */
+.au-sec{padding-block:clamp(72px,10vw,120px)}
+.au-sec.au-white{background:var(--st-card)}
+.au-kicker{font-size:15px;font-weight:600;color:var(--st-ink2);margin:0 0 12px}
+.au-h2{font-size:clamp(34px,5.2vw,56px);line-height:1.06;font-weight:700;letter-spacing:-.035em;margin:0;text-wrap:balance}
+.au-h2 span{color:var(--st-ink3)}
+.au-split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,6vw,80px);align-items:end}
+.au-split p{margin:0;font-size:clamp(17px,1.7vw,21px);line-height:1.45;color:var(--st-ink2);letter-spacing:-.01em}
+.au-split p b{color:var(--st-ink);font-weight:600}
+.au-split p + p{margin-top:16px}
+.au-stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:clamp(48px,7vw,80px);border-top:1px solid var(--st-hair)}
+.au-stat{padding:28px 20px 0 0}
+.au-stat b{display:block;font-size:clamp(40px,5.5vw,64px);font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.au-stat span{display:block;font-size:15px;color:var(--st-ink2);margin-top:10px;max-width:22ch}
+.au-notes{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,40px);margin-top:clamp(48px,7vw,72px)}
+.au-note h3{font-size:19px;font-weight:600;letter-spacing:-.015em;margin:0 0 8px}
+.au-note p{margin:0;font-size:15.5px;line-height:1.5;color:var(--st-ink2)}
+.au-note .au-ic{width:36px;height:36px;border-radius:10px;background:var(--st-ground);display:grid;place-items:center;margin-bottom:16px}
+.au-note .au-ic svg{width:19px;height:19px;stroke:var(--st-accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ideas */
+.au-ideas-h{margin-bottom:clamp(32px,5vw,48px)}
+.au-list{background:var(--st-card);border-radius:28px;padding-inline:clamp(20px,4vw,44px)}
+.au-idea{display:grid;grid-template-columns:56px 1fr 220px;gap:20px;align-items:start;padding-block:clamp(26px,3.5vw,36px);border-top:1px solid var(--st-hair)}
+.au-idea:first-child{border-top:0}
+.au-idea .au-num{font-size:15px;font-weight:600;color:var(--st-ink3);font-variant-numeric:tabular-nums;padding-top:6px}
+.au-idea h3{font-size:clamp(21px,2.4vw,26px);line-height:1.2;font-weight:600;letter-spacing:-.022em;margin:0 0 8px}
+.au-idea p{margin:0 0 12px;font-size:17px;line-height:1.5;color:var(--st-ink2);max-width:58ch}
+.au-idea p code{font:600 15px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--st-ink);background:var(--st-ground);padding:2px 7px;border-radius:6px}
+.au-idea .au-lnk{font-size:15px}
+.au-imp{text-align:right}
+.au-imp .au-v{font-size:clamp(30px,3.6vw,40px);font-weight:700;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums;color:var(--st-accent)}
+.au-imp .au-l{font-size:13.5px;color:var(--st-ink2);margin-top:8px}
+.au-band{margin-top:20px;background:var(--st-accent);color:#fff;border-radius:28px;padding:clamp(32px,5vw,56px);display:grid;grid-template-columns:1fr auto;gap:clamp(28px,5vw,64px);align-items:center}
+.au-band .au-k{font-size:15px;font-weight:600;color:rgba(255,255,255,.62);margin:0 0 10px}
+.au-band h3{font-size:clamp(24px,3vw,32px);line-height:1.18;font-weight:600;letter-spacing:-.022em;margin:0;text-wrap:balance}
+.au-band .au-fn{font-size:13px;line-height:1.5;color:rgba(255,255,255,.55);margin:16px 0 0;max-width:52ch}
+.au-nums{display:flex;gap:clamp(28px,4vw,48px)}
+.au-nums small{display:block;font-size:13px;color:rgba(255,255,255,.62)}
+.au-nums b{display:block;font-size:clamp(48px,6.5vw,76px);font-weight:700;letter-spacing:-.045em;line-height:1;color:var(--st-hi);font-variant-numeric:tabular-nums;margin:4px 0 8px}
+.au-nums span{font-size:14px;color:rgba(255,255,255,.8)}
+.au-band .au-btn{background:var(--st-hi);color:var(--st-accent);font-weight:600;margin-top:26px}
+
+/* prototype */
+.au-proto-h{text-align:center;max-width:720px;margin:0 auto}
+.au-proto-h p{font-size:clamp(17px,1.7vw,21px);color:var(--st-ink2);margin:14px 0 0}
+.au-seg{display:flex;gap:4px;justify-content:center;margin:clamp(28px,4vw,40px) auto 0;padding:4px;background:var(--st-ground);border-radius:980px;width:max-content;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.au-seg::-webkit-scrollbar{display:none}
+.au-chip{flex:none;display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--st-ink2);font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:980px;cursor:pointer;white-space:nowrap}
+.au-chip:hover{color:var(--st-ink)}
+.au-chip.on{background:var(--st-card);color:var(--st-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.au-chip i{font-style:normal;font-size:11px;font-weight:700;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--st-hi);color:var(--st-accent)}
+.au-stage{display:grid;grid-template-columns:auto minmax(0,420px);gap:clamp(32px,6vw,72px);justify-content:center;align-items:center;margin-top:clamp(28px,4vw,44px)}
+.phone{width:390px;height:844px;border-radius:56px;padding:10px;background:#0b0d10;box-shadow:0 0 0 1.5px #3a3d42,0 40px 90px rgba(0,0,0,.25);max-width:calc(100vw - 44px)}
+.phone-in{position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;background:var(--b-bg)}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:20px;background:#000;z-index:9}
+.sbar{position:absolute;top:0;left:0;right:0;height:52px;display:flex;justify-content:space-between;align-items:center;padding:4px 32px 0;font:600 15px -apple-system,system-ui,sans-serif;color:var(--b-ink);z-index:8;pointer-events:none}
+.au-pn{background:var(--st-ground);border-radius:28px;padding:clamp(26px,3.5vw,38px)}
+.au-pn-k{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--st-ink)}
+.au-pn-k i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-pn-k.au-ctx{color:var(--st-ink2)}.au-pn-k.au-ctx i{background:var(--st-ink3);box-shadow:none}
+.au-pn-t{font-size:clamp(24px,2.6vw,30px);line-height:1.12;font-weight:700;letter-spacing:-.028em;margin:10px 0 14px;text-wrap:balance}
+.au-pn-h{margin:0;font-size:17px;line-height:1.55;color:var(--st-ink2)}
+.au-pn-h b{color:var(--st-ink);font-weight:600}
+.au-pn-o{margin-top:24px;padding-top:22px;border-top:1px solid var(--st-hair)}
+.au-pn-o .au-lab{font-size:13px;font-weight:600;color:var(--st-ink3)}
+.au-pn-o .au-val{font-size:clamp(38px,4.4vw,50px);font-weight:700;letter-spacing:-.04em;line-height:1.05;color:var(--st-accent);margin-top:6px;font-variant-numeric:tabular-nums}
+.au-pn-o .au-sub{font-size:14px;color:var(--st-ink2);margin-top:4px}
+.au-pn-a{margin:18px 0 0;font-size:14px;line-height:1.5;color:var(--st-ink2)}
+.au-pn-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:28px;padding-top:18px;border-top:1px solid var(--st-hair);font-size:13px;color:var(--st-ink3)}
+.au-pn-nav button{background:var(--st-card);border:0;border-radius:980px;padding:8px 15px;font-size:14px;font-weight:500;color:var(--st-ink);cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.au-pn-nav button:disabled{opacity:.35;cursor:default}
+.au-hint{text-align:center;font-size:14px;color:var(--st-ink3);margin:22px 0 0}
+
+/* footer */
+.au-foot{padding-block:56px 72px;border-top:1px solid var(--st-hair)}
+.au-foot details{border-bottom:1px solid var(--st-hair);padding-bottom:18px}
+.au-foot summary{cursor:pointer;font-size:17px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+.au-foot summary::-webkit-details-marker{display:none}
+.au-foot summary::after{content:"+";font-size:24px;font-weight:300;color:var(--st-ink2)}
+.au-foot details[open] summary::after{content:"−"}
+.au-srcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 48px;margin-top:18px}
+.au-srcs h4{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--st-ink3);margin:18px 0 6px}
+.au-srcs dl{margin:0}.au-srcs dt{font-size:14.5px;font-weight:600;margin-top:10px}
+.au-srcs dd{margin:3px 0 0;font-size:14px;line-height:1.5;color:var(--st-ink2)}
+.au-fine{font-size:12.5px;line-height:1.6;color:var(--st-ink3);margin:22px 0 0;max-width:80ch}
+.au-cta-line{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:36px}
+.au-cta-line p{margin:0;font-size:clamp(19px,2.2vw,24px);font-weight:600;letter-spacing:-.02em;max-width:34ch}
+
+@media (max-width:900px){
+  .au-split,.au-band{grid-template-columns:1fr}
+  .au-notes{grid-template-columns:1fr}
+  .au-idea{grid-template-columns:40px 1fr}
+  .au-imp{grid-column:2;text-align:left;display:flex;align-items:baseline;gap:10px}
+  .au-imp .au-l{margin:0}
+  .au-imp .au-v{white-space:nowrap}
+  .au-stage{grid-template-columns:1fr;justify-items:center}
+  .au-pn{width:100%;max-width:520px}
+  .au-srcs{grid-template-columns:1fr}
+}
+@media (max-width:560px){.au-stats{grid-template-columns:1fr}.au-stat{padding:22px 0 0}.au-nums{flex-direction:column;gap:18px}}
+
+/* ================= extras (audit side): video, language, phone view + QR, paywall today vs proposed, ?tour ================= */
+[hidden]{display:none!important}
+/* the device never scrolls: off-screen slides would otherwise make it scrollable by focus / scrollIntoView */
+.phone-in,.scr{overflow:clip}
+/* hero: walkthrough link */
+.au-play::before{content:"▶";font-size:.72em;margin-right:7px;position:relative;top:-1px}
+/* video dialog */
+.au-vid{border:0;padding:0;background:transparent;max-width:min(1120px,94vw);width:100%;overflow:visible}
+.au-vid::backdrop{background:rgba(0,0,0,.74);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.au-vid-in{background:#000;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.au-vid video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.au-vid-bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 4px 0;font-size:14px}
+.au-vid-bar a{color:#fff;opacity:.85}
+.au-vid-x{background:rgba(255,255,255,.16);border:0;color:#fff;border-radius:980px;padding:8px 16px;font-size:14px;cursor:pointer}
+/* language switch */
+.au-langrow{display:flex;justify-content:center;align-items:center;gap:12px;margin:18px 0 0;font-size:13.5px;color:var(--st-ink2);flex-wrap:wrap}
+.au-lsw{display:inline-flex;gap:2px;padding:3px;background:var(--st-ground);border-radius:980px}
+.au-lsw button{border:0;background:none;padding:6px 13px;border-radius:980px;font-size:13.5px;font-weight:500;color:var(--st-ink2);cursor:pointer;white-space:nowrap}
+.au-lsw button.on{background:var(--st-card);color:var(--st-ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+/* QR card (desktop) / full-screen button (phone) */
+.au-qr{display:flex;align-items:center;gap:18px;margin:26px auto 0;max-width:500px;background:var(--st-ground);border-radius:22px;padding:14px 22px 14px 14px}
+.au-qr img{width:112px;height:112px;border-radius:12px;image-rendering:pixelated;flex:none;background:#fff}
+.au-qr b{display:block;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.au-qr p{margin:4px 0 0;font-size:14.5px;line-height:1.45;color:var(--st-ink2)}
+.au-mobw{display:none;text-align:center;margin-top:22px}
+@media (max-width:900px){.au-qr{display:none}.au-mobw{display:block}}
+/* paywall: today vs proposed */
+.au-cmp{display:grid;grid-template-columns:minmax(0,290px) minmax(0,1fr) minmax(0,290px);gap:clamp(24px,4vw,52px);align-items:center;margin-top:clamp(32px,5vw,52px)}
+.au-cmp figure{margin:0;text-align:center}
+.au-cmp figure img{display:block;width:100%;height:auto;filter:drop-shadow(0 24px 44px rgba(0,0,0,.18))}
+.au-cmp figcaption{margin-top:14px;font-size:15px;font-weight:600}
+.au-cmp figcaption span{color:var(--st-ink2);font-weight:400}
+.au-cmp-go{border:0;padding:0;background:none;cursor:pointer;display:block;width:100%;transition:transform .3s}
+.au-cmp-go:hover{transform:translateY(-4px)}
+.au-chg{list-style:none;margin:0;background:var(--st-card);border-radius:24px;padding:4px clamp(18px,2.4vw,28px)}
+.au-chg li{padding:15px 0;border-top:1px solid var(--st-hair)}
+.au-chg li:first-child{border-top:0}
+.au-chg h4{margin:0 0 7px;font-size:16px;font-weight:600;letter-spacing:-.01em;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.au-chg h4 i{font-style:normal;font-size:12px;font-weight:600;color:var(--st-accent);background:var(--st-mark);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.au-was,.au-now{display:grid;grid-template-columns:78px 1fr;gap:8px;font-size:14.5px;line-height:1.42}
+.au-was{color:var(--st-ink3)}
+.au-now{color:var(--st-ink);margin-top:3px}
+.au-was em,.au-now em{font-style:normal;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}
+.au-now em{color:var(--st-link)}
+.au-kept{margin:22px 0 0;font-size:14px;color:var(--st-ink2);text-align:center}
+@media (max-width:900px){.au-cmp{grid-template-columns:1fr 1fr;gap:18px}.au-chg{grid-column:1 / -1;order:3}.au-was,.au-now{grid-template-columns:70px 1fr}}
+
+/* ?app — the prototype full screen on a real phone, with a bar that opens the idea panel */
+html.appmode,html.appmode body{height:100%;overflow:hidden;background:#000}
+html.appmode .au-nav,html.appmode .au-top-hero,html.appmode #why,html.appmode #ideas,html.appmode #compare,html.appmode .au-foot,
+html.appmode .au-proto-h,html.appmode #prototype .au-langrow,html.appmode #chips,html.appmode .au-hint,html.appmode .au-qr,html.appmode .au-mobw{display:none!important}
+html.appmode #prototype{padding:0;background:#000}
+html.appmode #prototype .au-wrap{padding:0;max-width:none}
+html.appmode .au-stage{display:block;margin:0}
+html.appmode .phone{position:fixed;top:0;left:0;right:0;margin:0 auto;width:min(100%,480px);height:calc(100% - 56px - env(safe-area-inset-bottom,0px));max-width:none;border-radius:0;padding:0;box-shadow:none;background:#000}
+html.appmode .phone-in{border-radius:0}
+html.appmode .island,html.appmode .sbar{display:none}
+html.appmode .scr .s-pad{padding-top:max(58px,calc(env(safe-area-inset-top,0px) + 16px))}
+html.appmode .scr .s-x,html.appmode .scr .s-lang{top:max(54px,calc(env(safe-area-inset-top,0px) + 10px))}
+.au-appbar,.au-scrim{display:none}
+html.appmode .au-appbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:70;height:calc(56px + env(safe-area-inset-bottom,0px));padding:0 12px env(safe-area-inset-bottom,0px) 16px;align-items:center;gap:12px;background:#0b0b0c;border-top:1px solid rgba(255,255,255,.1);color:#fff}
+.au-ab-why{flex:1;min-width:0;display:flex;align-items:center;gap:9px;background:none;border:0;color:#fff;font-size:14px;font-weight:500;text-align:left;cursor:pointer;padding:0}
+.au-ab-why i{width:8px;height:8px;border-radius:50%;background:var(--st-hi);flex:none}
+.au-ab-why span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.au-ab-why em{font-style:normal;color:rgba(255,255,255,.6);margin-left:auto;flex:none;font-size:13px}
+.au-appbar .au-lsw{background:rgba(255,255,255,.12)}
+.au-appbar .au-lsw button{color:rgba(255,255,255,.75);padding:5px 11px}
+.au-appbar .au-lsw button.on{background:#fff;color:#000}
+html.appmode #panel{position:fixed;left:0;right:0;bottom:0;z-index:80;max-width:none;width:auto;margin:0 auto;border-radius:24px 24px 0 0;max-height:78%;overflow:auto;transform:translateY(105%);transition:transform .3s cubic-bezier(.3,.7,.2,1);padding-bottom:calc(26px + env(safe-area-inset-bottom,0px))}
+html.appmode.au-open #panel{transform:none}
+html.appmode.au-open .au-scrim{display:block;position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.5)}
+
+/* ?tour — 1280×720 walkthrough frames (record-video.sh renders them into assets/walkthrough.mp4) */
+.au-tour{display:none}
+html.tourmode,html.tourmode body{overflow:hidden;background:var(--st-ground)}
+html.tourmode body *{visibility:hidden}
+html.tourmode .phone,html.tourmode .phone *,html.tourmode .au-tour,html.tourmode .au-tour *{visibility:visible}
+html.tourmode .phone{position:fixed;left:170px;top:44px;margin:0;transform:scale(.755);transform-origin:0 0;box-shadow:0 0 0 1.5px #3a3d42,0 34px 80px rgba(0,0,0,.22);z-index:5;max-width:none}
+html.tourmode .au-tour{display:block;position:fixed;inset:0;z-index:6;pointer-events:none;color:var(--st-ink)}
+.au-tb{position:absolute;left:590px;top:30px;display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600}
+.au-tb img{width:26px;height:26px;border-radius:7px}
+.au-tb small{font-size:16px;font-weight:400;color:var(--st-ink2)}
+.au-tby{position:absolute;right:48px;top:32px;font-size:14px;color:var(--st-ink3)}
+.au-tcap{position:absolute;left:590px;right:60px;top:50%;transform:translateY(-50%)}
+.au-tk{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:600}
+.au-tk i{width:9px;height:9px;border-radius:50%;background:var(--st-hi);box-shadow:0 0 0 3px var(--st-mark)}
+.au-tk.au-ctx{color:var(--st-ink2)}.au-tk.au-ctx i{background:var(--st-ink3);box-shadow:none}
+.au-tt{font-size:46px;line-height:1.06;font-weight:700;letter-spacing:-.035em;margin:14px 0 14px;text-wrap:balance}
+.au-tl{font-size:23px;line-height:1.36;color:var(--st-ink2);letter-spacing:-.01em;margin:0;max-width:28ch}
+.au-to{margin-top:28px;padding-top:22px;border-top:1px solid var(--st-hair)}
+.au-to small{display:block;font-size:14px;font-weight:600;color:var(--st-ink3)}
+.au-to b{display:inline-block;font-size:62px;font-weight:700;letter-spacing:-.045em;line-height:1.08;color:var(--st-accent);margin-top:4px}
+.au-to span{display:block;font-size:16px;color:var(--st-ink2);margin-top:2px}
+.au-tprog{position:absolute;left:48px;right:48px;bottom:22px;height:4px;border-radius:3px;background:var(--st-hair);overflow:hidden}
+.au-tprog i{display:block;height:100%;background:var(--st-hi)}
+.au-ttap{position:absolute;left:0;top:0;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,255,255,.5);box-shadow:0 0 0 2.5px rgba(255,255,255,.9),0 6px 16px rgba(0,0,0,.35);opacity:0}
+.au-tintro,.au-tend{position:absolute;inset:0;background:var(--st-ground);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0}
+.au-tintro .au-lede{margin-top:18px}
+.au-te-h{font-size:46px;line-height:1.08;font-weight:700;letter-spacing:-.035em;margin:0;max-width:18ch;text-wrap:balance}
+.au-te-n{display:flex;gap:64px;margin-top:30px}
+.au-te-n small{display:block;font-size:14px;color:var(--st-ink2)}
+.au-te-n b{display:block;font-size:76px;font-weight:700;letter-spacing:-.045em;line-height:1;color:var(--st-accent);margin:4px 0 6px}
+.au-te-n span{font-size:15px;color:var(--st-ink2)}
+.au-te-q{display:flex;align-items:center;gap:18px;margin-top:34px;background:var(--st-card);border-radius:20px;padding:12px 24px 12px 12px;text-align:left}
+.au-te-q img{width:104px;height:104px;border-radius:10px;image-rendering:pixelated}
+.au-te-q b{display:block;font-size:18px;font-weight:600}
+.au-te-q span{display:block;font-size:15px;color:var(--st-link);margin-top:3px}
+.au-te-f{position:absolute;bottom:44px;left:0;right:0;font-size:13px;color:var(--st-ink3);margin:0}
+
+/* ---------- screen engine (layout only, no colours) ---------- */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--b-bg);color:var(--b-ink);font-family:var(--b-font);
+     transform:translateX(100%);transition:transform .32s cubic-bezier(.3,.7,.2,1);overflow:hidden;text-align:left;line-height:normal;font-size:16px}
+.scr.is-active{transform:none;z-index:2}.scr.is-past{transform:translateX(-28%)}.scr.under{transform:none;z-index:1}
+.scr.sheet{transform:translateY(100%)}.scr.sheet.is-active{transform:none}
+.nofx,.nofx *{transition:none!important}
+.shot .scr{transition:none!important}
+/* ?phone — just the device at (10,10), for shoot.sh and hero-stills.sh (&clear = transparent ground) */
+.phoneonly body{background:#141615}
+.phoneonly.clear body{background:transparent}
+.phoneonly body *{visibility:hidden}
+.phoneonly .phone,.phoneonly .phone *{visibility:visible}
+.phoneonly .phone{position:fixed;top:10px;left:10px;z-index:99;box-shadow:none;max-width:none;margin:0}
+
+/* SCREENS:START — styles for the app's screens. RULE: colours only via var(--b-*), or white/black
+   with alpha (scrims, shadows). RULE: no class name that the audit page above already uses. */
+.scr.wh{background:var(--b-white)}
+.body{flex:1;display:flex;flex-direction:column;padding:62px 22px 0;gap:12px;overflow:auto;position:relative;z-index:1}
+.top{display:flex;align-items:center;gap:16px;min-height:26px}
+.back{background:none;border:0;padding:0;cursor:pointer;display:flex;color:var(--b-ink)}
+.back svg{width:24px;height:24px}
+.prog{flex:1;height:4px;border-radius:4px;background:var(--b-track);overflow:hidden}.prog i{display:block;height:100%;background:var(--b-ink);border-radius:4px}
+.q{font:700 27px/1.17 var(--b-font);letter-spacing:-.4px;margin:14px 0 0}
+.qs{font:400 15px/1.35 var(--b-font);color:var(--b-ink2);margin:-2px 0 0}
+.opts{display:flex;flex-direction:column;gap:10px;margin:auto 0}
+.opt{display:flex;align-items:center;gap:16px;background:var(--b-surface);border:1.5px solid transparent;border-radius:999px;padding:16px 18px;font:400 16px var(--b-font);color:var(--b-ink);text-align:left;cursor:pointer;width:100%}
+.opt .n{width:28px;height:28px;border-radius:50%;background:var(--b-line);display:flex;align-items:center;justify-content:center;font:500 13px var(--b-font);flex:none}
+.opt.on{border-color:var(--b-green2)}
+.opt.on .n{background:var(--b-green);color:var(--b-white);font-size:0}
+.opt.on .n::after{content:"✓";font-size:14px;font-weight:700}
+.foot{margin:auto -22px 0;background:var(--b-surface);padding:14px 22px 30px}
+.foot.nb{background:none}
+.cta{width:100%;border:0;border-radius:999px;background:var(--b-primary);color:var(--b-primary-ink);font:600 17px var(--b-font);padding:17px;cursor:pointer}
+.cta.off{background:var(--b-off);pointer-events:none}
+.cta.sq{border-radius:16px}
+/* welcome */
+.lang{position:absolute;top:58px;right:18px;background:var(--b-surface);border:1px solid var(--b-line);border-radius:999px;padding:7px 13px;font:600 14px var(--b-font);color:var(--b-ink);display:flex;gap:6px;align-items:center;cursor:pointer;z-index:2}
+.wel{margin-top:150px}
+.wel h1{font:800 44px/1.05 var(--b-font);letter-spacing:-1px;margin:0}
+.wel p{font:400 19px/1.3 var(--b-font);color:var(--b-ink2);margin:14px 0 0;max-width:260px}
+.wel img{height:44px;width:auto;margin-top:34px}
+.signin{text-align:center;font:400 14px var(--b-font);color:var(--b-ink);margin:14px 0 0}
+/* usual time wheel + goal */
+.wheel{margin:auto 0;display:flex;flex-direction:column;gap:2px}
+.wheel button{background:none;border:0;border-radius:14px;font:400 21px var(--b-font);color:var(--b-ink3);padding:8px 0;cursor:pointer;display:grid;grid-template-columns:1fr 1fr 1fr;width:100%}
+.wheel button span:first-child{text-align:right;padding-right:22px}
+.wheel button span:last-child{text-align:left;padding-left:22px}
+.wheel button.on{background:var(--b-line);color:var(--b-ink);font-size:24px}
+.wheel button:not(.on) span:last-child{visibility:hidden}
+.goal{margin:auto 0;text-align:center;display:flex;flex-direction:column;gap:12px}
+.goal h1{font:700 23px/1.25 var(--b-font);margin:0}
+.goal .or{color:var(--b-orange)}
+.goal p{font:400 13px/1.4 var(--b-font);color:var(--b-ink2);margin:0 20px}
+/* challenge */
+.chs{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+.ch{display:flex;align-items:center;gap:12px;background:var(--b-surface);border:1.5px solid transparent;border-radius:18px;padding:9px 14px 9px 8px;cursor:pointer;text-align:left;width:100%;font-family:var(--b-font);color:var(--b-ink)}
+.ch img{width:52px;height:52px;object-fit:contain;flex:none}
+.ch div{flex:1;min-width:0}
+.ch b{display:block;font:600 16px var(--b-font)}
+.ch small{display:block;font:400 13px/1.3 var(--b-font);color:var(--b-ink2);margin-top:2px}
+.ch .eye{width:30px;height:30px;border-radius:50%;background:var(--b-line);display:flex;align-items:center;justify-content:center;flex:none;color:var(--b-ink2)}
+.ch .eye svg{width:17px;height:17px}
+.ch.on{border-color:var(--b-track)}
+.ch.on .eye{background:var(--b-green);color:var(--b-white)}
+.ch .eye .k{display:none}.ch.on .eye .k{display:block}.ch.on .eye .e{display:none}
+/* try it once */
+.alarm{background:var(--b-surface);border-radius:24px;padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;margin:auto 0}
+.alarm .bel{width:62px;height:62px;animation:erly-ring .6s ease-in-out infinite}
+@keyframes erly-ring{0%,100%{transform:rotate(0)}25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+.shot .alarm .bel{animation:none}
+.atime{font:800 48px/1 var(--b-font);letter-spacing:-1.5px}
+.task{display:flex;align-items:center;gap:10px;font:500 15px var(--b-font)}
+.task img{width:40px;height:40px;object-fit:contain}
+.bar{width:100%;height:8px;border-radius:8px;background:var(--b-line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--b-green);border-radius:8px}
+.cnt{font:700 15px var(--b-font);color:var(--b-ink2)}
+.done{margin:auto 0;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.donek{width:76px;height:76px;border-radius:50%;background:var(--b-green);color:var(--b-white);display:flex;align-items:center;justify-content:center;font:700 38px var(--b-font)}
+.done h2{font:700 28px var(--b-font);letter-spacing:-.4px;margin:4px 0 0}
+.done p{font:400 16px/1.4 var(--b-font);color:var(--b-ink2);margin:0 10px}
+/* commitment */
+.cm{font:400 17px/1.4 var(--b-font);margin:0}
+.padk{text-align:center;font:400 15px var(--b-font);color:var(--b-ink2);margin:auto 0 0}
+.pad{position:relative;background:var(--b-pad);border-radius:20px;height:190px;cursor:pointer;border:0;width:100%;padding:0;display:flex;align-items:center;justify-content:center}
+.pad svg{width:200px;height:150px}
+.pad path{stroke:var(--b-ink);stroke-width:3;fill:none;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900;transition:stroke-dashoffset 1.1s ease}
+.pad.on path{stroke-dashoffset:0}
+.shot .pad path{transition:none}
+.pad .clr{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;background:var(--b-track);color:var(--b-ink2);display:none;align-items:center;justify-content:center;font:500 15px var(--b-font)}
+.pad.on .clr{display:flex}
+.pad .tap{position:absolute;font:400 14px var(--b-font);color:var(--b-ink3)}
+.pad.on .tap{display:none}
+.sgd{text-align:center;font:400 14px var(--b-font);color:var(--b-ink2);margin:0 0 auto}
+/* tomorrow */
+.tmw{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:22px}
+.tmw .okc{width:34px;height:34px;border-radius:50%;background:var(--b-ink);color:var(--b-white);display:flex;align-items:center;justify-content:center;font:700 16px var(--b-font)}
+.tml{font:400 17px var(--b-font);color:var(--b-ink2);margin:8px 0 0}
+.tmt{font:800 54px/1 var(--b-font);letter-spacing:-1.8px;margin:0}
+.steps{display:flex;align-items:flex-start;justify-content:center;gap:4px;margin-top:10px;width:100%}
+.steps div{display:flex;flex-direction:column;align-items:center;gap:7px;font:400 12.5px/1.2 var(--b-font);color:var(--b-ink2);width:92px;text-align:center}
+.steps img{width:44px;height:44px}
+.steps .mid{width:44px;height:44px;border-radius:50%;background:var(--b-ink);display:flex;align-items:center;justify-content:center}
+.steps .mid img{width:30px;height:30px;object-fit:contain}
+.steps em{font-style:normal;color:var(--b-ink3);margin-top:12px}
+.nosn{font:400 16px var(--b-font);color:var(--b-ink2);margin:6px 0 0}
+.strk{background:var(--b-surface);border-radius:20px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:8px;width:100%}
+.strk b{font:600 16px var(--b-font)}
+.strk small{font:400 13px/1.35 var(--b-font);color:var(--b-ink2);text-align:center}
+.days{display:flex;gap:7px;margin-top:8px}
+.days span{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--b-lav);display:flex;align-items:center;justify-content:center;font:500 12px var(--b-font)}
+.days .we{background:var(--b-pad);border-color:transparent;color:var(--b-ink3)}
+/* paywall: their white screens */
+.pwtop{display:flex;justify-content:space-between;align-items:center;min-height:28px}
+.rst{font:400 15px var(--b-font);color:var(--b-ink3)}
+.xb{background:none;border:0;padding:0;cursor:pointer;color:var(--b-ink);display:flex}
+.xb svg{width:22px;height:22px}
+.chev{background:none;border:0;padding:0;cursor:pointer;color:var(--b-ink3);display:flex}
+.chev svg{width:22px;height:22px}
+.pwh{font:700 26px/1.2 var(--b-font);text-align:center;letter-spacing:-.4px;margin:20px 0 0}
+.fl{display:flex;flex-direction:column;gap:14px;margin-top:20px}
+.fl>div{display:flex;gap:10px}
+.fl svg{width:18px;height:18px;flex:none;margin-top:2px}
+.fl b{display:block;font:500 17px var(--b-font)}
+.fl small{display:block;font:400 14px/1.3 var(--b-font);color:var(--b-ink3);margin-top:3px}
+.lau{display:flex;flex-direction:column;align-items:center;margin:auto 0;gap:6px}
+.lau img{height:64px;width:auto}
+.lau span{font:600 14px var(--b-font)}
+.lau span small{font-weight:400;color:var(--b-ink3)}
+.nopay{display:flex;justify-content:center;align-items:center;gap:8px;font:500 15px var(--b-font);margin-top:4px}
+.nopay svg{width:18px;height:18px}
+.fine{font:400 12.5px var(--b-font);color:var(--b-ink3);text-align:center;margin:0 0 26px}
+.bellw{margin:auto 0;display:flex;justify-content:center}
+.bellw img{width:150px;height:auto}
+.tl{list-style:none;margin:18px 0 0;padding:0}
+.tl li{display:flex;gap:16px;position:relative;padding-bottom:14px}
+.tl li::before{content:"";position:absolute;left:15px;top:32px;bottom:-4px;width:8px;border-radius:0 0 6px 6px;background:var(--b-orange2)}
+.tl li:last-child::before{background:var(--b-grey);bottom:-10px;border-radius:0 0 8px 8px}
+.tl img{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none;position:relative}
+.tl b{display:block;font:500 17px var(--b-font);margin-top:6px}
+.tl small{display:block;font:400 14px/1.3 var(--b-font);color:var(--b-ink3);margin-top:3px}
+.proof{display:flex;flex-direction:column;gap:3px;background:var(--b-bg);border-radius:14px;padding:9px 12px;margin-top:auto}
+.proof .rt{display:flex;align-items:center;gap:6px;font:600 13px var(--b-font)}
+.proof .rt i{font-style:normal;color:var(--b-orange);letter-spacing:1px}
+.proof .rt small{font-weight:400;color:var(--b-ink3)}
+.proof q{font:400 13px/1.35 var(--b-font);quotes:"“" "”"}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.pc{position:relative;border:2.5px solid var(--b-track);border-radius:18px;padding:13px 10px 13px 14px;display:flex;justify-content:space-between;align-items:center;background:var(--b-white);cursor:pointer;font-family:var(--b-font);color:var(--b-ink);text-align:left}
+.pc.on{border-color:var(--b-ink)}
+.pc span{display:block;font:400 15px/1.35 var(--b-font)}
+.pc b{display:block;font:400 16.5px var(--b-font);white-space:nowrap}
+.rad{width:22px;height:22px;border-radius:50%;border:2px solid var(--b-track);flex:none;display:flex;align-items:center;justify-content:center;color:var(--b-white);font:700 12px var(--b-font)}
+.pc.on .rad{background:var(--b-ink);border-color:var(--b-ink)}
+.ptag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--b-ink);color:var(--b-white);font:600 11px var(--b-font);padding:3px 10px;border-radius:999px;white-space:nowrap}
+/* one-time offer */
+.ofh{font:700 29px var(--b-font);text-align:center;letter-spacing:-.4px;margin:34px 0 0}
+.ofw{position:relative;align-self:center;margin:26px 0 0;padding:0 46px}
+.ofb{background:var(--b-ink);background-image:linear-gradient(135deg,rgba(255,255,255,.34),rgba(255,255,255,0) 65%);color:var(--b-white);font:600 33px/1.12 var(--b-font);padding:22px 30px;border-radius:22px;text-align:center;box-shadow:0 12px 28px rgba(0,0,0,.28);border:2px solid rgba(255,255,255,.2)}
+.ofw i{position:absolute;font-style:normal;color:var(--b-ink);line-height:1}
+.ofp{text-align:center;font:300 22px var(--b-font);margin:22px 0 0}
+.ofp s{font-weight:700}
+.ofk{text-align:center;font:500 15px var(--b-font);margin:0}
+.ofn{font:300 13px/1.45 var(--b-font);color:var(--b-ink3);text-align:center;margin:auto 0 0}
+.ofc{border:2.5px solid var(--b-ink);border-radius:18px;overflow:hidden;margin-top:10px}
+.ofc .k{background:var(--b-ink);color:var(--b-white);text-align:center;font:500 13px var(--b-font);padding:4px;letter-spacing:.3px}
+.ofc .r{display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px 12px}
+.ofc b{font:600 18px var(--b-font)}
+.ofc small{display:block;font:400 13px var(--b-font);color:var(--b-ink3);margin-top:3px}
+.nocm{display:flex;justify-content:center;align-items:center;gap:8px;font:600 14px var(--b-font);margin:4px 0 22px}
+.nocm svg{width:18px;height:18px}
+/* SCREENS:END */
+</style>
+</head>
+<body>
+
+<nav class="au-nav" aria-label="Sections">
+  <div class="au-nav-in">
+    <div class="au-brand">
+      <img src="assets/brand/appstore-icon.jpg" alt="">
+      <span>Growth Audit <small>· Erly</small></span>
+    </div>
+    <a class="au-opt" href="#why">Why this</a>
+    <a href="#ideas">Five ideas</a>
+    <a href="#prototype">Prototype</a>
+    <a class="au-opt" href="#compare" id="navCompare" hidden>Paywall</a>
+  </div>
+</nav>
+
+<header class="au-top-hero" id="top">
+  <div class="au-wrap">
+    <p class="au-eyebrow"><i></i>Growth Audit · November 2026</p>
+    <h1 class="au-display">Erly</h1>
+    <p class="au-lede">Five ideas to turn more early risers into subscribers. <span>Each one built into your own onboarding, so you can tap through it.</span></p>
+    <p class="au-byline">Prepared by Adapty for the Erly team</p>
+    <div class="au-ctas">
+      <a class="au-btn" href="#ideas">See the five ideas</a>
+      <a class="au-lnk" href="#prototype">Open the prototype</a>
+      <button type="button" class="au-lnk au-play" id="heroVideo" hidden>Watch the 30-second walkthrough</button>
+    </div>
+  </div>
+  <!-- filled from CONTENT.hero: three screen ids → assets/hero/<id>.png (make them with hero-stills.sh) -->
+  <div class="au-phones" id="heroPhones" aria-label="Three screens from the prototype"></div>
+</header>
+
+<section class="au-sec au-white" id="why">
+  <div class="au-wrap">
+    <div class="au-split">
+      <div>
+        <p class="au-kicker">Why you’re seeing this</p>
+        <h2 class="au-h2">30,000 subscription apps taught us what moves conversion. <span>Here’s what we’d test first at Erly.</span></h2>
+      </div>
+      <div>
+        <p>Adapty runs subscriptions for <b>more than 30,000 apps</b>, so we see which onboarding and paywall changes lift revenue across the whole market, not just inside one app.</p>
+        <p>We pointed that at Erly. We went through <b>your live iOS onboarding and paywall</b>, took your own screens, copy and prices, and rebuilt the path from install to paywall around the five ideas with the most potential.</p>
+      </div>
+    </div>
+    <div class="au-stats">
+      <div class="au-stat"><b>30,000+</b><span>apps run their subscriptions on Adapty</span></div>
+      <div class="au-stat"><b>5</b><span>ideas, each built as a working screen</span></div>
+      <div class="au-stat"><b>0</b><span>changes to your art direction</span></div>
+    </div>
+    <div class="au-notes">
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg></div>
+        <h3>Five ideas, not fifteen</h3>
+        <p>We’re not proposing to rebuild every screen. These are the changes with the highest potential, ranked by what we’d test first.</p>
+      </div>
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M3.5 12h17"/></svg></div>
+        <h3>Your design, not ours</h3>
+        <p>Every colour, control and price in the prototype is Erly’s, cut from your own screens. We changed the order and what gets said.</p>
+      </div>
+      <div class="au-note">
+        <div class="au-ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v6.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13A1.5 1.5 0 0 1 5.5 4H15"/></svg></div>
+        <h3>We hope you haven’t tried these yet</h3>
+        <p>We walked your live flow, but we can’t see your test history. If you’ve already run one of these, tell us and we’ll go deeper on the rest.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="au-sec" id="ideas">
+  <div class="au-wrap">
+    <div class="au-ideas-h">
+      <p class="au-kicker">The shortlist</p>
+      <h2 class="au-h2">Five ideas. <span>Ranked by what we’d test first.</span></h2>
+    </div>
+    <div class="au-list" id="ideaList"></div>
+    <div class="au-band">
+      <div>
+        <p class="au-k">Potential outcome, based on Adapty data</p>
+        <h3>Together they work on four moments: how fast people reach the alarm, what they feel before the price, what the paywall says back to them, and what happens when they back out.</h3>
+        <p class="au-fn" id="bandFn"></p>
+        <a class="au-btn" href="#prototype">Tap through the prototype</a>
+      </div>
+      <div class="au-nums" id="bandNums"></div>
+    </div>
+  </div>
+</section>
+
+<section class="au-sec au-white" id="prototype">
+  <div class="au-wrap">
+    <div class="au-proto-h">
+      <p class="au-kicker">The prototype</p>
+      <h2 class="au-h2">Every idea, inside your own onboarding.</h2>
+      <p>Tap through it like a new user, or jump straight to an idea. Numbered chips mark the screens that carry one.</p>
+    </div>
+    <div class="au-langrow" id="langRow" hidden><span>Prototype language</span><div class="au-lsw" id="langSw" role="group" aria-label="Prototype language"></div></div>
+    <div class="au-seg" id="chips" role="tablist" aria-label="Screens"></div>
+    <div class="au-stage">
+      <div class="phone"><div class="phone-in">
+        <div class="island"></div>
+        <div class="sbar"><span>9:41</span><span>●●● ▮</span></div>
+
+<!-- SCREENS:START — Erly: Wake Up Early. Rebuilt from a screen recording of the live iOS flow (2 Nov 2026) and the paywall screenshots.
+     Flow: welcome → obstacle → usual → goal → challenge → try (new) → commit → tomorrow → pw-free → pw-remind → pw-trial → offer (sheet).
+     Aside: today = the first paywall screen as it is today, word for word. -->
+
+<section class="scr" data-id="welcome">
+  <button class="lang" data-langtoggle aria-label="Language"><span data-t="w.lang">🇺🇸 EN</span></button>
+  <div class="body">
+    <div class="wel">
+      <h1 data-t="w.h">Welcome!</h1>
+      <p data-t="w.s">Let's start by understanding your wake up habits and routines</p>
+      <img src="assets/crop2/laurel.png" alt="Five stars">
+    </div>
+    <div class="foot nb">
+      <button class="cta" data-go="obstacle"><span data-t="w.cta">Get Started</span></button>
+      <p class="signin"><span data-t="w.si">Already have an account?</span> <b data-t="w.si2">Sign in</b></p>
+    </div>
+  </div>
+</section>
+
+<section class="scr" data-id="obstacle">
+  <div class="body">
+    <div class="top"><button class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg></button><div class="prog"><i style="width:10%"></i></div></div>
+    <h1 class="q" data-t="o.h">What is your biggest obstacle to getting out of bed?</h1>
+    <div class="opts">
+      <button class="opt" data-pick="obstacle:scroll"><span class="n">1</span><span data-t="o.a">I scroll on my phone</span></button>
+      <button class="opt" data-pick="obstacle:snooze"><span class="n">2</span><span data-t="o.b">I hit snooze repeatedly</span></button>
+      <button class="opt" data-pick="obstacle:sleep"><span class="n">3</span><span data-t="o.c">I sleep through my alarms</span></button>
+      <button class="opt" data-pick="obstacle:none"><span class="n">4</span><span data-t="o.d">None of the above</span></button>
+    </div>
+    <div class="foot"><button class="cta" data-need="obstacle" data-go="usual"><span data-t="cont">Continue</span></button></div>
+  </div>
+</section>
+
+<section class="scr" data-id="usual">
+  <div class="body">
+    <div class="top"><button class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg></button><div class="prog"><i style="width:35%"></i></div></div>
+    <h1 class="q" data-t="u.h">What time do you usually get out of bed?</h1>
+    <p class="qs" data-t="u.s">Be honest - we won't judge</p>
+    <div class="wheel">
+      <button data-pick="usual:700"><span>7</span><span>00</span><span>AM</span></button>
+      <button data-pick="usual:730"><span>7</span><span>30</span><span>AM</span></button>
+      <button data-pick="usual:800"><span>8</span><span>00</span><span>AM</span></button>
+      <button data-pick="usual:830"><span>8</span><span>30</span><span>AM</span></button>
+      <button data-pick="usual:900"><span>9</span><span>00</span><span>AM</span></button>
+    </div>
+    <div class="foot"><button class="cta" data-go="goal"><span data-t="cont">Continue</span></button></div>
+  </div>
+</section>
+
+<section class="scr" data-id="goal">
+  <div class="body">
+    <div class="top"><button class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg></button><div class="prog"><i style="width:45%"></i></div></div>
+    <div class="goal">
+      <h1><span data-t="g.h1">Waking up at</span> <span class="or" data-bind="label:goal"></span> <span data-t="g.h2">is a realistic target. It's not hard at all!</span></h1>
+      <p data-t="g.s">90% of users say that they wake up on time after using Erly.</p>
+    </div>
+    <div class="foot"><button class="cta" data-go="challenge"><span data-t="cont">Continue</span></button></div>
+  </div>
+</section>
+
+<section class="scr" data-id="challenge">
+  <div class="body" style="gap:8px">
+    <div class="top"><button class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg></button><div class="prog"><i style="width:70%"></i></div></div>
+    <h1 class="q" data-t="c.h">Set your wake-up challenge</h1>
+    <p class="qs" data-t="c.s">Complete this to dismiss your alarm</p>
+    <div class="chs">
+      <button class="ch" data-pick="challenge:pushups"><img src="assets/crop2/ch-pushups.png" alt=""><div><b data-t="c.pu">Push Ups</b><small data-t="c.pus">Complete push-ups to start your day strong</small></div><span class="eye"><svg class="e" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.5C5.5 5.5 2 12 2 12s3.5 6.5 10 6.5S22 12 22 12s-3.5-6.5-10-6.5zm0 10a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><svg class="k" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></button>
+      <button class="ch" data-pick="challenge:search"><img src="assets/crop2/ch-search.png" alt=""><div><b data-t="c.se">Item Search</b><small data-t="c.ses">Find and photograph a random item</small></div><span class="eye"><svg class="e" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.5C5.5 5.5 2 12 2 12s3.5 6.5 10 6.5S22 12 22 12s-3.5-6.5-10-6.5zm0 10a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><svg class="k" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></button>
+      <button class="ch" data-pick="challenge:squats"><img src="assets/crop2/ch-squats.png" alt=""><div><b data-t="c.sq">Squats</b><small data-t="c.sqs">Complete squats to start your day strong</small></div><span class="eye"><svg class="e" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.5C5.5 5.5 2 12 2 12s3.5 6.5 10 6.5S22 12 22 12s-3.5-6.5-10-6.5zm0 10a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><svg class="k" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></button>
+      <button class="ch" data-pick="challenge:dance"><img src="assets/crop2/ch-dance.png" alt=""><div><b data-t="c.da">Dance</b><small data-t="c.das">Keep dancing until the ring fills up</small></div><span class="eye"><svg class="e" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.5C5.5 5.5 2 12 2 12s3.5 6.5 10 6.5S22 12 22 12s-3.5-6.5-10-6.5zm0 10a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><svg class="k" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></button>
+      <button class="ch" data-pick="challenge:bed"><img src="assets/crop2/ch-bed.png" alt=""><div><b data-t="c.be">Make Bed</b><small data-t="c.bes">Make your bed and take a photo of it</small></div><span class="eye"><svg class="e" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.5C5.5 5.5 2 12 2 12s3.5 6.5 10 6.5S22 12 22 12s-3.5-6.5-10-6.5zm0 10a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><svg class="k" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></button>
+      <button class="ch" data-pick="challenge:grass"><img src="assets/crop2/ch-grass.png" alt=""><div><b data-t="c.gr">Touch Grass</b><small data-t="c.grs">Step outside and take a photo of grass or dirt</small></div><span class="eye"><svg class="e" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.5C5.5 5.5 2 12 2 12s3.5 6.5 10 6.5S22 12 22 12s-3.5-6.5-10-6.5zm0 10a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><svg class="k" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></button>
+    </div>
+    <div class="foot"><button class="cta" data-go="try"><span data-t="cont">Continue</span></button></div>
+  </div>
+</section>
+
+<section class="scr" data-id="try">
+  <div class="body">
+    <div class="top"><button class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg></button><div class="prog"><i style="width:78%"></i></div></div>
+    <div data-show="tried:0"><h1 class="q" data-t="y.h">Turn off your first alarm</h1></div>
+    <div data-show="tried:0"><p class="qs" style="margin-top:6px"><span data-t="y.s">This is what tomorrow at</span> <span data-bind="label:goal"></span> <span data-t="y.s2">will feel like.</span></p></div>
+    <div data-show="tried:0" class="alarm">
+      <img class="bel" src="assets/crop2/t-alarm.png" alt="">
+      <p class="atime" data-bind="label:goal"></p>
+      <div class="task"><img id="tryIco" src="assets/crop2/ch-pushups.png" alt=""><span id="tryTask"></span></div>
+      <div class="bar"><i id="tryBar"></i></div>
+      <p class="cnt" id="tryCnt"></p>
+    </div>
+    <div data-show="tried:1" class="done">
+      <div class="donek">✓</div>
+      <h2 data-t="y.dh">Alarm off</h2>
+      <p><span data-t="y.ds">That's tomorrow at</span> <b data-bind="label:goal"></b><span data-t="y.ds2">. No snooze, just</span> <span data-bind="label:challenge"></span><span data-t="y.ds3">.</span></p>
+    </div>
+    <div class="foot">
+      <div data-show="tried:0"><button class="cta trygo"><span data-t="y.cta">Start the challenge</span></button></div>
+      <div data-show="tried:1"><button class="cta" data-go="commit"><span data-t="cont">Continue</span></button></div>
+    </div>
+  </div>
+</section>
+
+<section class="scr" data-id="commit">
+  <div class="body">
+    <div class="top"><button class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg></button><div class="prog"><i style="width:88%"></i></div></div>
+    <h1 class="q" data-t="k.h">Sign your commitment</h1>
+    <p class="cm"><span data-t="k.s">Promise yourself that you will wake up tomorrow at</span> <b data-bind="label:goal"></b><span data-t="k.s2">, when your alarm goes off.</span></p>
+    <p class="padk" data-t="k.k">Sign to make it official</p>
+    <button class="pad" data-pick="signed:1" aria-label="Sign"><svg viewBox="0 0 200 150"><path d="M22 112c14-30 22-62 40-78 10-9 14 4 9 22-6 22-14 44-6 50 9 7 22-30 32-40 8-8 9 10 13 20 5 12 14 6 22-6 7-10 12-14 18-8 5 5 9 6 16-2"/></svg><span class="tap" data-t="k.tap">Tap to sign</span><span class="clr">✕</span></button>
+    <p class="sgd"><span data-t="k.on">Signed on</span> <span class="js-date"></span></p>
+    <div class="foot"><button class="cta" data-need="signed" data-go="tomorrow"><span data-t="cont">Continue</span></button></div>
+  </div>
+</section>
+
+<section class="scr" data-id="tomorrow">
+  <div class="body">
+    <div class="top"><button class="back" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg></button><div class="prog"><i style="width:97%"></i></div></div>
+    <div class="tmw">
+      <span class="okc">✓</span>
+      <p class="tml" data-t="t.l">Tomorrow, you will wake up at</p>
+      <p class="tmt" data-bind="label:goal"></p>
+      <div class="steps">
+        <div><img src="assets/crop2/t-alarm.png" alt=""><span data-t="t.a">Alarm rings</span></div><em>→</em>
+        <div><span class="mid"><img id="tmIco" src="assets/crop2/ch-pushups.png" alt=""></span><span data-bind="label:challenge"></span></div><em>→</em>
+        <div><img src="assets/crop2/t-sun.png" alt=""><span data-t="t.c">Alarm off</span></div>
+      </div>
+      <p class="nosn" data-t="t.n">No snoozing. No backup alarms.</p>
+      <div class="strk">
+        <b data-t="t.sk">Your wake-up streak</b>
+        <small data-t="t.sks">Complete your mission on these days to build your streak</small>
+        <div class="days" id="tmDays"></div>
+      </div>
+    </div>
+    <div class="foot"><button class="cta" data-go="pw-free"><span data-t="cont">Continue</span></button></div>
+  </div>
+</section>
+
+<section class="scr wh" data-id="pw-free">
+  <div class="body" style="gap:0">
+    <div class="pwtop"><button class="xb" data-go="offer" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button><span class="rst" data-t="pw.rs">Restore</span></div>
+    <h1 class="pwh"><span data-t="f.h1">Your</span> <span data-bind="label:goal"></span> <span data-t="f.h2">alarm is set. Try Erly for free.</span></h1>
+    <div class="fl">
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><div><b data-t="pw.f1">No Snooze Alarms</b><small><span data-bind="label:challenge"></span> <span data-t="f.f1s">is the only way to turn off your</span> <span data-bind="label:goal"></span> <span data-t="f.f1e">alarm</span></small></div></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><div><b data-t="pw.f2">Hold Yourself Accountable</b><small data-t="f.f2s">Your signed promise and your streak start tomorrow, Monday to Friday</small></div></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><div><b data-t="pw.f3">Block Distracting Apps</b><small><span data-show="obs:scroll"><span data-t="f.f3a">You said you scroll on your phone in bed. Erly blocks those apps until you're up</span></span><span data-show="obs:snooze"><span data-t="f.f3b">No more doom scrolling between snoozes, at night or in the morning</span></span><span data-show="obs:sleep"><span data-t="f.f3c">No more doom scrolling in bed at night, so you hear the alarm</span></span><span data-show="obs:none"><span data-t="pw.f3s">No more doom scrolling in bed at night or in the morning</span></span></small></div></div>
+    </div>
+    <div class="lau"><img src="assets/crop2/laurel.png" alt="Five stars"><span><span data-t="f.r">4.8</span> <small data-t="f.rc">from 16K ratings on the App Store</small></span></div>
+    <p class="nopay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><span data-t="pw.np">No Payment Due Now</span></p>
+    <button class="cta sq" style="margin-top:14px" data-go="pw-remind"><span data-t="pw.try">Try for $0.00</span></button>
+    <p class="fine" style="margin-top:12px" data-t="pw.fine">3 days free, then $29.99 per year ($2.49/mo)</p>
+  </div>
+</section>
+
+<section class="scr wh" data-id="pw-remind">
+  <div class="body" style="gap:0">
+    <div class="pwtop"><button class="chev" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><span class="rst" data-t="pw.rs">Restore</span></div>
+    <h1 class="pwh" style="margin-top:70px" data-t="r.h">We'll send you a reminder before your free trial ends</h1>
+    <div class="bellw"><img src="assets/crop2/bell.png" alt=""></div>
+    <p class="nopay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><span data-t="pw.np">No Payment Due Now</span></p>
+    <button class="cta sq" style="margin-top:14px" data-go="pw-trial"><span data-t="r.cta">Continue for FREE</span></button>
+    <p class="fine" style="margin-top:12px" data-t="pw.fine">3 days free, then $29.99 per year ($2.49/mo)</p>
+  </div>
+</section>
+
+<section class="scr wh" data-id="pw-trial">
+  <div class="body" style="gap:0">
+    <div class="pwtop"><button class="chev" data-go="offer" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><span class="rst" data-t="pw.rs">Restore</span></div>
+    <h1 class="pwh" style="margin-top:6px" data-t="tr.h">Start your 3-day FREE trial to continue.</h1>
+    <ol class="tl">
+      <li><img src="assets/crop2/tl-unlock.png" alt=""><div><b data-t="tr.1">Today</b><small data-t="tr.1s">Unlock all the app's features like no snooze alarms and more.</small></div></li>
+      <li><img src="assets/crop2/tl-bell.png" alt=""><div><b data-t="tr.2">In 2 Days - Reminder</b><small data-t="tr.2s">We'll send you a reminder that your trial is ending soon.</small></div></li>
+      <li><img src="assets/crop2/tl-crown.png" alt=""><div><b data-t="tr.3">In 3 Days - Billing Starts</b><small><span data-t="tr.3s">You'll be charged on</span> <span class="js-charge"></span> <span data-t="tr.3e">unless you cancel anytime before.</span></small></div></li>
+    </ol>
+    <div class="proof">
+      <div class="rt"><i>★★★★★</i><span data-t="f.r">4.8</span><small data-t="tr.rc">from 16K ratings</small></div>
+      <q data-t="tr.q">It actually gets me up on time and its worth the money</q>
+    </div>
+    <div class="plans">
+      <button class="pc" data-pick="plan:week"><div><span data-t="pw.wk">Weekly</span><b data-t="pw.wkp">$6.99/wk</b></div><span class="rad">✓</span></button>
+      <button class="pc" data-pick="plan:year"><span class="ptag" data-t="pw.tag">3-Days FREE</span><div><span data-t="pw.yr">Yearly</span><b data-t="pw.yrp">$29.99/yr</b></div><span class="rad">✓</span></button>
+    </div>
+    <p class="nopay" style="margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><span data-show="plan:year"><span data-t="pw.np">No Payment Due Now</span></span><span data-show="plan:week"><span data-t="pw.nc">No Commitment - Cancel Anytime</span></span></p>
+    <button class="cta sq" style="margin-top:12px" data-go="offer"><span data-show="plan:year"><span data-t="tr.cta">Start My 3-Day Free Trial</span></span><span data-show="plan:week"><span data-t="pw.journey">Start My Journey</span></span></button>
+    <p class="fine" style="margin-top:12px"><span data-show="plan:year"><span data-t="pw.fine">3 days free, then $29.99 per year ($2.49/mo)</span></span><span data-show="plan:week"><span data-t="pw.wkf">Just $6.99 per week</span></span></p>
+  </div>
+</section>
+
+<section class="scr wh sheet" data-id="offer">
+  <div class="body" style="gap:0">
+    <div class="pwtop"><button class="xb" data-back aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
+    <h1 class="ofh" data-t="of.h">Your one-time offer</h1>
+    <div class="ofw">
+      <i style="left:2px;top:-8px;font-size:30px;opacity:.4">✦</i><i style="left:-4px;top:30px;font-size:46px">✦</i><i style="left:8px;bottom:-10px;font-size:20px">✦</i><i style="right:-2px;top:-2px;font-size:44px">✦</i><i style="right:10px;bottom:-4px;font-size:24px;opacity:.45">✦</i>
+      <div class="ofb" data-t="of.b">33% OFF<br>FOREVER</div>
+    </div>
+    <p class="ofp"><s data-t="of.was">$29.99</s> <span data-t="of.now">$19.99/yr</span></p>
+    <p class="ofk"><span data-t="of.k1">Keep your</span> <span data-bind="label:goal"></span> <span data-t="of.k2">alarm and</span> <span data-bind="label:challenge"></span><span data-t="of.k3">.</span></p>
+    <p class="ofn" data-t="of.n">Once you close your one-time offer, it's gone!<br>Save 33% with this offer.</p>
+    <div class="ofc"><div class="k" data-t="of.tr">3-DAY FREE TRIAL</div><div class="r"><div><b data-t="of.pl">Yearly Plan</b><small data-t="of.pls">12mo • $19.99</small></div><b data-t="of.now">$19.99/yr</b></div></div>
+    <button class="cta sq" style="margin-top:12px" data-back><span data-t="of.cta">Start Free Trial</span></button>
+    <p class="nocm" style="margin-top:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><span data-t="pw.nc">No Commitment - Cancel Anytime</span></p>
+  </div>
+</section>
+
+<section class="scr wh" data-id="today" data-aside>
+  <div class="body" style="gap:0">
+    <div class="pwtop"><span></span><span class="rst" data-t="pw.rs">Restore</span></div>
+    <h1 class="pwh" style="margin-top:34px" data-t="td.h">We want you to try Erly for free.</h1>
+    <div class="fl" style="margin-top:34px">
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><div><b data-t="pw.f1">No Snooze Alarms</b><small data-t="pw.f1s">Complete a task, like push-ups, to turn off your alarm</small></div></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><div><b data-t="pw.f2">Hold Yourself Accountable</b><small data-t="pw.f2s">Track your streak to make sure you wake up early every morning</small></div></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><div><b data-t="pw.f3">Block Distracting Apps</b><small data-t="pw.f3s">No more doom scrolling in bed at night or in the morning</small></div></div>
+    </div>
+    <div class="lau"><img src="assets/crop2/laurel.png" alt="Five stars"></div>
+    <p class="nopay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><span data-t="pw.np">No Payment Due Now</span></p>
+    <button class="cta sq" style="margin-top:14px" data-go="pw-remind"><span data-t="pw.try">Try for $0.00</span></button>
+    <p class="fine" style="margin-top:12px" data-t="pw.fine">3 days free, then $29.99 per year ($2.49/mo)</p>
+  </div>
+</section>
+<!-- SCREENS:END -->
+
+      </div></div>
+      <div class="au-pn" id="panel" aria-live="polite"></div>
+    </div>
+    <p class="au-hint">Close the paywall with ✕ to see idea 5.</p>
+    <!-- shown when CONTENT.liveUrl is set: assets/qr-app.png = qr.swift "<liveUrl>?app" -->
+    <div class="au-qr" id="qrCard" hidden><img src="assets/qr-app.png" alt="QR code that opens the prototype full screen"><div><b>Try it on your phone</b><p>Scan to open the prototype full screen, the way a new user would see it.</p></div></div>
+    <div class="au-mobw" id="qrMob" hidden><a class="au-btn" href="?app">Open it full screen</a></div>
+  </div>
+</section>
+
+<!-- the paywall TODAY vs PROPOSED — built from CONTENT.compare (stills: assets/hero/<today>.png, <proposed>.png) -->
+<section class="au-sec" id="compare" hidden><div class="au-wrap" id="cmpBody"></div></section>
+
+<footer class="au-foot" id="sources">
+  <div class="au-wrap">
+    <details id="srcDetails">
+      <summary>Where the numbers come from</summary>
+      <div class="au-srcs" id="srcBody"></div>
+    </details>
+    <p class="au-fine" id="fine"></p>
+    <div class="au-cta-line">
+      <p>Every screen here can be built and A/B tested in Adapty’s Flow Builder, with no app release.</p>
+      <a class="au-btn" href="https://adapty.io/flow-paywall-builder/" target="_blank" rel="noopener">About Flow Builder</a>
+    </div>
+  </div>
+</footer>
+
+<!-- extras: video dialog (CONTENT.video), ?app bar, ?tour overlay (CONTENT.tour) -->
+<dialog class="au-vid" id="vid" aria-label="Walkthrough video">
+  <div class="au-vid-in"><video id="vidEl" controls muted playsinline preload="none"></video></div>
+  <div class="au-vid-bar"><a id="vidDl" download>Download the MP4</a><button type="button" class="au-vid-x" id="vidX">Close</button></div>
+</dialog>
+<div class="au-scrim" id="abScrim"></div>
+<div class="au-appbar" id="appbar">
+  <button type="button" class="au-ab-why" id="abWhy"><i></i><span id="abT"></span><em>Why ↑</em></button>
+  <div class="au-lsw" id="abLang" role="group" aria-label="Language"></div>
+</div>
+<div class="au-tour" aria-hidden="true">
+  <div class="au-tb"><img src="assets/brand/appstore-icon.jpg" alt="">Growth Audit <small>· Erly</small></div>
+  <div class="au-tby">Prepared by Adapty</div>
+  <div class="au-tcap" id="tCap"></div>
+  <div class="au-ttap" id="tTap"></div>
+  <div class="au-tprog"><i id="tProg"></i></div>
+  <div class="au-tintro" id="tIntro"></div>
+  <div class="au-tend" id="tEnd"></div>
+</div>
+
+<!-- CONTENT — all the audit's words and numbers, as data. Schema (brand-check enforces it):
+     ideas  : 3–5 rows, ranked (the audit is five ideas, never fifteen). screen = the screen that shows it.
+     panel  : one entry per screen. idea = its number in ideas (1-based) or 0 for a context screen.
+              why on an idea screen reads "<b>Try</b> X, <b>because</b> Y." in ≤ 45 words; iv = its range.
+              why on a context screen is one line saying what it sets up.
+     hero   : three screen ids shown as stills in the hero — run hero-stills.sh after the screens are done.
+     outcome: combined "up to" numbers, PS-deck style, never above the ceiling of the per-idea ranges.
+     sources: public facts only — App Store, their site, their screens. No sales research on this page.
+     EXTRAS (each one hides itself when left empty):
+     langs  : [{"code":"en","name":"English"},{"code":"es","name":"Español · Spain prices"}] — first = the markup's language
+     i18n   : {"es": {"<data-t key>": "text with {tokens}"}} — every data-t key, for every language after the first
+     prices : {"es": {"yr": "39,99 €", …}} — {tokens} in i18n strings; that storefront's real IAP prices
+     labelsI18n: {"es": {"goal": {"a": "…"}}} — C.labels per language (data-bind="label:…")
+     liveUrl: final Pages URL (QR card + video end card); the QR file encodes liveUrl + "?app"
+     video / poster: "assets/walkthrough.mp4" / "assets/walkthrough-poster.jpg" (record-video.sh)
+     compare: {today, proposed, kicker, title, sub, todayCap, rows:[{h, idea, was, now}], kept} — today = a data-aside screen
+     tour   : {segments:[{id, d, st, tap:[selector-in-screen, ms], pop, reveal, end}], captions:{id:{n|k, t, l, o, ol}},
+              introLede, endTitle} — ~30 s total; the last segment has end:true (the end card) -->
+<script type="application/json" id="content">
+{
+ "app": "Erly",
+ "state": {
+  "obstacle": "",
+  "usual": "800",
+  "goal": "630",
+  "challenge": "pushups",
+  "tried": "0",
+  "signed": "",
+  "plan": "year"
+ },
+ "labels": {
+  "goal": {
+   "530": "5:30 AM",
+   "600": "6:00 AM",
+   "630": "6:30 AM",
+   "700": "7:00 AM",
+   "730": "7:30 AM"
+  },
+  "challenge": {
+   "pushups": "Push Ups",
+   "search": "Item Search",
+   "squats": "Squats",
+   "dance": "Dance",
+   "bed": "Make Bed",
+   "grass": "Touch Grass"
+  }
+ },
+ "chips": {
+  "welcome": "Welcome",
+  "obstacle": "First question",
+  "usual": "Wake time",
+  "goal": "Goal",
+  "challenge": "Challenge",
+  "try": "Test alarm",
+  "commit": "Commitment",
+  "tomorrow": "Tomorrow",
+  "pw-free": "Paywall",
+  "pw-remind": "Reminder",
+  "pw-trial": "Free trial",
+  "offer": "On close"
+ },
+ "hero": [
+  "tomorrow",
+  "pw-free",
+  "try"
+ ],
+ "outcome": {
+  "cr": "+20%",
+  "arpu": "+10%"
+ },
+ "ideas": [
+  {
+   "screen": "pw-free",
+   "title": "Make the paywall about their 6:30 AM",
+   "what": "By the paywall, Erly knows their goal time, their challenge and the obstacle they named, and they’ve signed a promise. The paywall still opens with “We want you to try Erly for free.” and the same three lines for everyone. Name their alarm, their challenge and their obstacle instead.",
+   "impact": "+10–20%",
+   "il": "CR to purchase"
+  },
+  {
+   "screen": "try",
+   "title": "Let them turn off one alarm first",
+   "what": "The challenge is what Erly sells, and today it’s picked on screen 24 and never felt before the price. Ring one test alarm right after the pick (10 push-ups, or a photo of a cup) so the paywall asks people to keep something that already worked.",
+   "impact": "+5–15%",
+   "il": "CR to purchase"
+  },
+  {
+   "screen": "pw-trial",
+   "title": "Put 4.8 from 16K ratings where they decide",
+   "what": "Your welcome and your first paywall show five stars in a laurel, with no number. 4.8 from 16,134 ratings is the strongest proof you have. Put the number under the laurel and one real review right above the plans, where $29.99 a year gets weighed.",
+   "impact": "+5–10%",
+   "il": "CR to purchase"
+  },
+  {
+   "screen": "obstacle",
+   "title": "Get to the alarm sooner",
+   "what": "33 screens stand between Get Started and the price, and the first three ask about gender, whether they’re a morning person and where they heard of you. Open on the obstacle question, and move attribution, the referral code and sign-in to after the paywall.",
+   "impact": "+5–10%",
+   "il": "CR to purchase"
+  },
+  {
+   "screen": "offer",
+   "title": "Send everyone who backs out to your 33% offer",
+   "what": "Backing out of the trial screen today lands on Weekly at $6.99 with no trial, and your 33% offer ($19.99 a year, your own price) shows only after someone cancels Apple’s purchase sheet. Show it to everyone who closes, with their alarm on it.",
+   "impact": "+5–10%",
+   "il": "ARPU"
+  }
+ ],
+ "panel": {
+  "welcome": {
+   "idea": 0,
+   "t": "Your welcome, kept",
+   "why": "Word for word, with your EN pill. The laurel stays as it is here; idea 3 adds its number on the paywall."
+  },
+  "obstacle": {
+   "idea": 4,
+   "t": "Get to the alarm sooner",
+   "why": "<b>Try</b> opening on this question and moving gender, “morning person” and “where did you hear about us” out of the first screens, <b>because</b> 33 screens stand before the price, and every question that isn’t about waking up costs you people who finish.",
+   "iv": "CR +5–10%",
+   "il": "to purchase",
+   "also": "Attribution, the referral code and sign-in move to after the paywall, where they no longer cost a purchase."
+  },
+  "usual": {
+   "idea": 0,
+   "t": "The answer we reuse",
+   "why": "Your wheel and your copy. The time picked here sets the goal that the test alarm, the commitment and the paywall all name."
+  },
+  "goal": {
+   "idea": 0,
+   "t": "Your goal reveal, kept",
+   "why": "Word for word. 8:00 AM becomes a 6:30 AM goal, as in your flow, and every later screen carries it."
+  },
+  "challenge": {
+   "idea": 0,
+   "t": "Your challenges, word for word",
+   "why": "Six of your challenges, as they are. The pick becomes the test alarm on the next screen and a line on the paywall."
+  },
+  "try": {
+   "idea": 2,
+   "t": "Let them turn off one alarm first",
+   "why": "<b>Try</b> ringing one test alarm right after they pick a challenge and letting them turn it off, <b>because</b> the challenge is what Erly sells, and a paywall converts better when it asks people to keep something they’ve already felt work.",
+   "iv": "CR +5–15%",
+   "il": "to purchase",
+   "also": ""
+  },
+  "commit": {
+   "idea": 0,
+   "t": "Your commitment, kept",
+   "why": "Word for word, now right after the test alarm, so the promise is about an alarm they’ve already beaten once."
+  },
+  "tomorrow": {
+   "idea": 0,
+   "t": "Your payoff, kept",
+   "why": "Your strongest screen before the price: their time, their challenge, their streak. We kept it, and moved “Save your progress” to after the paywall."
+  },
+  "pw-free": {
+   "idea": 1,
+   "t": "Make the paywall about their 6:30 AM",
+   "why": "<b>Try</b> a headline and feature lines built from their answers (the alarm time, the challenge, the obstacle they named), <b>because</b> today the paywall opens with the same words for everyone, right after 33 screens of personal questions.",
+   "iv": "CR +10–20%",
+   "il": "to purchase",
+   "also": "Also here: idea 3 (4.8 under your laurel) and idea 5 (an ✕ that opens your offer)."
+  },
+  "pw-remind": {
+   "idea": 0,
+   "t": "Your reminder screen, kept",
+   "why": "Word for word. It answers the worry about being charged after the trial before the price comes up, so we left it alone."
+  },
+  "pw-trial": {
+   "idea": 3,
+   "t": "Put 4.8 from 16K ratings where they decide",
+   "why": "<b>Try</b> your rating and one real review right above the plans, <b>because</b> this is where people weigh $29.99 a year, and today the only proof in your paywall is five stars with no number.",
+   "iv": "CR +5–10%",
+   "il": "to purchase",
+   "also": "The back arrow now opens your 33% offer (idea 5) instead of Weekly with no trial."
+  },
+  "offer": {
+   "idea": 5,
+   "t": "Send everyone who backs out to your offer",
+   "why": "<b>Try</b> showing your 33% offer to everyone who closes or backs out, with their alarm on it, <b>because</b> today it appears only after someone cancels Apple’s purchase sheet, and backing out lands on Weekly with no trial.",
+   "iv": "ARPU +5–10%",
+   "il": "",
+   "also": ""
+  }
+ },
+ "langs": [
+  {
+   "code": "en",
+   "name": "English"
+  },
+  {
+   "code": "es",
+   "name": "Español · Mexico prices"
+  }
+ ],
+ "i18n": {
+  "es": {
+   "w.lang": "🇲🇽 ES",
+   "w.h": "¡Bienvenido!",
+   "w.s": "Empecemos por conocer tus hábitos y rutinas al despertar",
+   "w.cta": "Comenzar",
+   "w.si": "¿Ya tienes cuenta?",
+   "w.si2": "Inicia sesión",
+   "cont": "Continuar",
+   "o.h": "¿Qué es lo que más te cuesta para salir de la cama?",
+   "o.a": "Me pongo a ver el celular",
+   "o.b": "Pospongo la alarma una y otra vez",
+   "o.c": "No escucho mis alarmas",
+   "o.d": "Ninguna de las anteriores",
+   "u.h": "¿A qué hora sueles salir de la cama?",
+   "u.s": "Sé honesto, no te vamos a juzgar",
+   "g.h1": "Despertar a las",
+   "g.h2": "es una meta realista. ¡No es nada difícil!",
+   "g.s": "El 90% de los usuarios dice que se despierta a tiempo después de usar Erly.",
+   "c.h": "Elige tu reto para despertar",
+   "c.s": "Complétalo para apagar tu alarma",
+   "c.pu": "Flexiones",
+   "c.pus": "Haz flexiones para empezar el día con fuerza",
+   "c.se": "Buscar objeto",
+   "c.ses": "Encuentra y fotografía un objeto al azar",
+   "c.sq": "Sentadillas",
+   "c.sqs": "Haz sentadillas para empezar el día con fuerza",
+   "c.da": "Baile",
+   "c.das": "Sigue bailando hasta que se llene el anillo",
+   "c.be": "Tender la cama",
+   "c.bes": "Tiende tu cama y tómale una foto",
+   "c.gr": "Tocar el pasto",
+   "c.grs": "Sal y tómale una foto al pasto o a la tierra",
+   "y.h": "Apaga tu primera alarma",
+   "y.s": "Así se sentirá mañana a las",
+   "y.s2": "",
+   "y.dh": "Alarma apagada",
+   "y.ds": "Así será mañana a las",
+   "y.ds2": ". Sin posponer, solo",
+   "y.ds3": ".",
+   "y.cta": "Empezar el reto",
+   "k.h": "Firma tu compromiso",
+   "k.s": "Prométete que mañana te despertarás a las",
+   "k.s2": ", cuando suene tu alarma.",
+   "k.k": "Firma para hacerlo oficial",
+   "k.tap": "Toca para firmar",
+   "k.on": "Firmado el",
+   "t.l": "Mañana te despertarás a las",
+   "t.a": "Suena la alarma",
+   "t.c": "Alarma apagada",
+   "t.n": "Sin posponer. Sin alarmas de respaldo.",
+   "t.sk": "Tu racha al despertar",
+   "t.sks": "Completa tu misión estos días para construir tu racha",
+   "pw.rs": "Restaurar",
+   "f.h1": "Tu alarma de las",
+   "f.h2": "está lista. Prueba Erly gratis.",
+   "pw.f1": "Alarmas sin posponer",
+   "f.f1s": "es la única forma de apagar tu alarma de las",
+   "f.f1e": "",
+   "pw.f2": "Hazte responsable",
+   "f.f2s": "Tu promesa firmada y tu racha empiezan mañana, de lunes a viernes",
+   "pw.f3": "Bloquea apps que distraen",
+   "f.f3a": "Dijiste que ves el celular en la cama. Erly bloquea esas apps hasta que te levantes",
+   "f.f3b": "Se acabó el scroll entre alarma y alarma, de noche o en la mañana",
+   "f.f3c": "Se acabó el scroll en la cama de noche, para que escuches la alarma",
+   "pw.f3s": "Se acabó el scroll en la cama, de noche o en la mañana",
+   "f.r": "4.8",
+   "f.rc": "de 215 calificaciones en el App Store de México",
+   "pw.np": "Nada que pagar hoy",
+   "pw.try": "Prueba por $0.00",
+   "pw.fine": "3 días gratis, luego {yr} al año ({yrmo}/mes)",
+   "r.h": "Te enviaremos un recordatorio antes de que termine tu prueba gratis",
+   "r.cta": "Continuar GRATIS",
+   "tr.h": "Empieza tu prueba GRATIS de 3 días para continuar.",
+   "tr.1": "Hoy",
+   "tr.1s": "Desbloquea todas las funciones, como las alarmas sin posponer y más.",
+   "tr.2": "En 2 días: recordatorio",
+   "tr.2s": "Te enviaremos un recordatorio de que tu prueba está por terminar.",
+   "tr.3": "En 3 días: empieza el cobro",
+   "tr.3s": "Se te cobrará el",
+   "tr.3e": "a menos que canceles antes.",
+   "tr.rc": "de 215 calificaciones",
+   "tr.q": "De verdad me despierta a tiempo y vale lo que cuesta",
+   "pw.wk": "Semanal",
+   "pw.wkp": "{wk}/sem",
+   "pw.yr": "Anual",
+   "pw.yrp": "{yr}/año",
+   "pw.tag": "3 días GRATIS",
+   "pw.nc": "Sin compromiso: cancela cuando quieras",
+   "tr.cta": "Empezar mi prueba gratis de 3 días",
+   "pw.journey": "Empezar mi camino",
+   "pw.wkf": "Solo {wk} a la semana",
+   "of.h": "Tu oferta única",
+   "of.b": "33% MENOS<br>PARA SIEMPRE",
+   "of.was": "{yr}",
+   "of.now": "{off}/año",
+   "of.k1": "Conserva tu alarma de las",
+   "of.k2": "y",
+   "of.k3": ".",
+   "of.n": "Cuando cierres tu oferta única, ¡desaparece!<br>Ahorra 33% con esta oferta.",
+   "of.tr": "PRUEBA GRATIS DE 3 DÍAS",
+   "of.pl": "Plan anual",
+   "of.pls": "12 meses • {off}",
+   "of.cta": "Empezar prueba gratis",
+   "td.h": "Queremos que pruebes Erly gratis.",
+   "pw.f1s": "Completa una tarea, como flexiones, para apagar tu alarma",
+   "pw.f2s": "Sigue tu racha para asegurarte de despertar temprano cada mañana"
+  }
+ },
+ "prices": {
+  "es": {
+   "yr": "$599.00",
+   "yrmo": "$49.92",
+   "wk": "$149.00",
+   "off": "$399.00"
+  }
+ },
+ "labelsI18n": {
+  "es": {
+   "goal": {
+    "530": "5:30 a. m.",
+    "600": "6:00 a. m.",
+    "630": "6:30 a. m.",
+    "700": "7:00 a. m.",
+    "730": "7:30 a. m."
+   },
+   "challenge": {
+    "pushups": "Flexiones",
+    "search": "Buscar objeto",
+    "squats": "Sentadillas",
+    "dance": "Baile",
+    "bed": "Tender la cama",
+    "grass": "Tocar el pasto"
+   }
+  }
+ },
+ "liveUrl": "https://eddieatadapty.github.io/erly-flow-rebuild-v2/",
+ "video": "assets/walkthrough.mp4",
+ "poster": "assets/walkthrough-poster.jpg",
+ "compare": {
+  "today": "today",
+  "proposed": "pw-free",
+  "kicker": "The paywall, side by side",
+  "title": "Your first paywall today, and the one we’d test.",
+  "sub": "Same layout, same button, same price line. What changes is what it says back to them.",
+  "todayCap": "rebuilt word for word from your live flow",
+  "rows": [
+   {
+    "h": "Headline",
+    "idea": 1,
+    "was": "“We want you to try Erly for free.”",
+    "now": "“Your 6:30 AM alarm is set. Try Erly for free.”"
+   },
+   {
+    "h": "Feature lines",
+    "idea": 1,
+    "was": "The same three lines for everyone",
+    "now": "Their challenge, their signed promise and the obstacle they named"
+   },
+   {
+    "h": "Proof",
+    "idea": 3,
+    "was": "Five stars in a laurel, no number",
+    "now": "4.8 from 16K ratings under the laurel, and a real review on the next step"
+   },
+   {
+    "h": "Way out",
+    "idea": 5,
+    "was": "No back or close on this screen",
+    "now": "An ✕ that opens your 33% offer at $19.99 a year"
+   },
+   {
+    "h": "Right before it",
+    "idea": 2,
+    "was": "A “Save your progress” sign-in",
+    "now": "A test alarm they’ve already turned off"
+   }
+  ],
+  "kept": "Kept as they are: “No Payment Due Now”, “Try for $0.00”, the price line, the reminder screen and the 3-day timeline."
+ },
+ "tour": {
+  "introLede": "Five ideas to turn more early risers into subscribers, built into Erly’s own onboarding.",
+  "endTitle": "Five ideas, built into your own onboarding.",
+  "segments": [
+   {
+    "id": "welcome",
+    "d": 3200,
+    "tap": [
+     ".cta",
+     2600
+    ]
+   },
+   {
+    "id": "obstacle",
+    "d": 2400,
+    "st": {
+     "obstacle": "scroll"
+    },
+    "tap": [
+     "[data-pick=\"obstacle:scroll\"]",
+     900
+    ]
+   },
+   {
+    "id": "usual",
+    "d": 1700,
+    "st": {
+     "usual": "800"
+    },
+    "tap": [
+     "[data-pick=\"usual:800\"]",
+     800
+    ]
+   },
+   {
+    "id": "goal",
+    "d": 1600
+   },
+   {
+    "id": "challenge",
+    "d": 2100,
+    "st": {
+     "challenge": "pushups"
+    },
+    "tap": [
+     "[data-pick=\"challenge:pushups\"]",
+     1000
+    ]
+   },
+   {
+    "id": "try",
+    "d": 2400,
+    "st": {
+     "tried": "0"
+    },
+    "tap": [
+     ".trygo",
+     1800
+    ]
+   },
+   {
+    "id": "try",
+    "d": 2200,
+    "st": {
+     "tried": "1"
+    },
+    "pop": ".donek"
+   },
+   {
+    "id": "commit",
+    "d": 2100,
+    "st": {
+     "signed": "1"
+    },
+    "tap": [
+     ".pad",
+     700
+    ]
+   },
+   {
+    "id": "tomorrow",
+    "d": 2500,
+    "tap": [
+     ".cta",
+     2000
+    ]
+   },
+   {
+    "id": "pw-free",
+    "d": 3000
+   },
+   {
+    "id": "pw-remind",
+    "d": 1400
+   },
+   {
+    "id": "pw-trial",
+    "d": 2800,
+    "tap": [
+     ".chev",
+     2300
+    ]
+   },
+   {
+    "id": "offer",
+    "d": 2600
+   },
+   {
+    "id": "offer",
+    "d": 3500,
+    "end": true
+   }
+  ],
+  "captions": {
+   "welcome": {
+    "k": "Context",
+    "t": "Your welcome, kept",
+    "l": "Word for word, laurel and all."
+   },
+   "obstacle": {
+    "n": 4,
+    "t": "Get to the alarm sooner",
+    "l": "Open on the obstacle; attribution moves after the price.",
+    "o": "CR +5–10%",
+    "ol": "to purchase"
+   },
+   "usual": {
+    "k": "Context",
+    "t": "Your wake-up wheel",
+    "l": "The answer every later screen reuses."
+   },
+   "goal": {
+    "k": "Context",
+    "t": "Your goal reveal",
+    "l": "8:00 AM becomes a 6:30 AM goal."
+   },
+   "challenge": {
+    "k": "Context",
+    "t": "Your challenges",
+    "l": "The pick becomes the test alarm."
+   },
+   "try": {
+    "n": 2,
+    "t": "Turn off one alarm first",
+    "l": "Ten push-ups before any price.",
+    "o": "CR +5–15%",
+    "ol": "to purchase"
+   },
+   "commit": {
+    "k": "Context",
+    "t": "Your commitment, kept",
+    "l": "Signed after they’ve beaten one alarm."
+   },
+   "tomorrow": {
+    "k": "Context",
+    "t": "Your payoff, kept",
+    "l": "Sign-in moves to after the paywall."
+   },
+   "pw-free": {
+    "n": 1,
+    "t": "A paywall about their 6:30 AM",
+    "l": "Their alarm, challenge and obstacle, in your layout.",
+    "o": "CR +10–20%",
+    "ol": "to purchase"
+   },
+   "pw-remind": {
+    "k": "Context",
+    "t": "Your reminder, kept",
+    "l": "Answers the trial-charge worry."
+   },
+   "pw-trial": {
+    "n": 3,
+    "t": "4.8 where they decide",
+    "l": "Rating and a real review above the plans.",
+    "o": "CR +5–10%",
+    "ol": "to purchase"
+   },
+   "offer": {
+    "n": 5,
+    "t": "Your offer, for everyone who backs out",
+    "l": "33% off, $19.99 a year, their alarm on it.",
+    "o": "ARPU +5–10%",
+    "ol": ""
+   }
+  }
+ },
+ "grounding": "Impact ranges are Adapty’s expected effect from teardowns and A/B tests across 30,000+ subscription apps, not measured lift for Erly. They overlap, so they don’t add up.",
+ "sources": [
+  {
+   "group": "Prices",
+   "items": [
+    {
+     "dt": "$29.99 a year · $6.99 a week",
+     "dd": "Your live paywall (US storefront prices), and the In-App Purchases on your <a href=\"https://apps.apple.com/us/app/erly-wake-up-early/id6751428380\" target=\"_blank\" rel=\"noopener\">US App Store listing</a>."
+    },
+    {
+     "dt": "$19.99 a year (one-time offer)",
+     "dd": "Your own “33% OFF FOREVER” offer, seen in your live flow after a cancelled purchase. $19.99 is on your US listing; $29.99 to $19.99 is 33%."
+    },
+    {
+     "dt": "$2.49 a month",
+     "dd": "Your paywall’s own fine print."
+    },
+    {
+     "dt": "Mexico: $599.00 · $149.00 · $399.00",
+     "dd": "<a href=\"https://apps.apple.com/mx/app/erly-wake-up-early/id6751428380\" target=\"_blank\" rel=\"noopener\">Mexico listing</a> In-App Purchases, matched to the US price points by rank. Per-month recomputed."
+    },
+    {
+     "dt": "Not used: $9.99 · $39.99",
+     "dd": "Also on the listing, but not on the paywall we saw."
+    }
+   ]
+  },
+  {
+   "group": "Proof",
+   "items": [
+    {
+     "dt": "4.8 from 16,134 ratings",
+     "dd": "US App Store listing, November 2026."
+    },
+    {
+     "dt": "4.8 from 215 ratings",
+     "dd": "Mexico App Store listing, used on the Spanish paywall."
+    },
+    {
+     "dt": "“It actually gets me up on time and its worth the money”",
+     "dd": "Public US App Store review, 8 October 2026, quoted as written. Translated by us on the Spanish paywall."
+    },
+    {
+     "dt": "“90% of users say that they wake up on time after using Erly.”",
+     "dd": "Your own goal screen, quoted as it is."
+    }
+   ]
+  },
+  {
+   "group": "Features and copy",
+   "items": [
+    {
+     "dt": "Every kept screen",
+     "dd": "Word for word from your live iOS flow (walked on 2 November 2026) and screenshots of your paywall: welcome, obstacle, wake time, goal, challenges, commitment, tomorrow, reminder, trial timeline, offer."
+    },
+    {
+     "dt": "33 screens before the price",
+     "dd": "Counted in that walk-through, from Get Started to the first paywall screen, not counting system permission prompts."
+    },
+    {
+     "dt": "Goal 90 minutes earlier",
+     "dd": "Your flow turned 8:00 AM into a 6:30 AM goal. We applied the same 90 minutes to the other times; your rule may differ."
+    },
+    {
+     "dt": "New copy",
+     "dd": "The test alarm, the paywall headline and feature lines, and the offer’s “Keep your … alarm” line are ours, written in your voice."
+    },
+    {
+     "dt": "Spanish",
+     "dd": "Our translation, not yours."
+    }
+   ]
+  },
+  {
+   "group": "Design",
+   "items": [
+    {
+     "dt": "Colours",
+     "dd": "Sampled off your screens: #f0f0f0 background, #fcfcfc rows, #e2e2e2 number chips, #34c558 picks, #f98b00 and #fbcc96 on the trial timeline, black buttons."
+    },
+    {
+     "dt": "Type",
+     "dd": "Your app uses SF Pro. It shows here in the system font (SF Pro on Apple devices), with Inter as the fallback."
+    },
+    {
+     "dt": "Art",
+     "dd": "Laurel, challenge icons, timeline icons, the bell and the alarm icons are cut from your own screens."
+    }
+   ]
+  },
+  {
+   "group": "What we couldn’t see",
+   "items": [
+    {
+     "dt": "Your test history",
+     "dd": "If you’ve already tested one of these, tell us and we’ll go deeper on the rest."
+    },
+    {
+     "dt": "Android, and other answers",
+     "dd": "We walked iOS once, with one set of answers. Screens that branch on other answers may differ."
+    }
+   ]
+  }
+ ]
+}
+</script>
+
+<script>
+/* Erly hooks: the goal follows the usual wake time; the test alarm, tomorrow screen and dates follow the picks and S.lang. */
+var CHI = {pushups: 'assets/crop2/ch-pushups.png', search: 'assets/crop2/ch-search.png', squats: 'assets/crop2/ch-squats.png', dance: 'assets/crop2/ch-dance.png', bed: 'assets/crop2/ch-bed.png', grass: 'assets/crop2/ch-grass.png'};
+var TASK = {
+  en: {pushups: 'Do 10 push-ups', search: 'Find and photograph a cup', squats: 'Do 10 squats', dance: 'Dance until the ring fills up', bed: 'Make your bed and snap a photo', grass: 'Step outside and snap the grass'},
+  es: {pushups: 'Haz 10 flexiones', search: 'Encuentra y fotografía una taza', squats: 'Haz 10 sentadillas', dance: 'Baila hasta que se llene el anillo', bed: 'Tiende tu cama y tómale una foto', grass: 'Sal y tómale una foto al pasto'}
+};
+var COUNT = {pushups: 10, squats: 10};
+var GOAL = {'700': '530', '730': '600', '800': '630', '830': '700', '900': '730'};   /* their flow: 8:00 AM → a 6:30 AM goal */
+var MON = {en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+           es: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']};
+var DAYL = {en: ['S', 'M', 'T', 'W', 'T', 'F', 'S'], es: ['D', 'L', 'M', 'M', 'J', 'V', 'S']};
+var tryRaf = 0;
+function erlyDate(d, L, short){
+  var m = MON[L][d.getMonth()];
+  if (L === 'es') return d.getDate() + (short ? ' ' + m.slice(0, 3) + ' ' : ' de ' + m + ' de ') + d.getFullYear();
+  return (short ? m.slice(0, 3) : m) + ' ' + d.getDate() + ', ' + d.getFullYear();
+}
+window.onSync = function(S){
+  if (HERO && !S._h) { S._h = 1; S.obstacle = 'scroll'; S.signed = '1'; }
+  var g = GOAL[S.usual]; if (g && S.goal !== g) { S.goal = g; return sync(); }
+  var o = S.obstacle || 'none'; if (S.obs !== o) { S.obs = o; return sync(); }
+  var L = S.lang === 'es' ? 'es' : 'en', c = S.challenge || 'pushups', n = COUNT[c];
+  document.getElementById('tryIco').src = CHI[c];
+  document.getElementById('tmIco').src = CHI[c];
+  document.getElementById('tryTask').textContent = TASK[L][c];
+  if (!tryRaf) {
+    var f = HERO ? .6 : 0;
+    document.getElementById('tryBar').style.width = f * 100 + '%';
+    document.getElementById('tryCnt').textContent = n ? Math.round(f * n) + ' / ' + n : '';
+  }
+  var now = new Date(), chg = new Date(now.getTime() + 3 * 864e5);
+  document.querySelectorAll('.js-date').forEach(function(e){ e.textContent = erlyDate(now, L); });
+  document.querySelectorAll('.js-charge').forEach(function(e){ e.textContent = erlyDate(chg, L, true); });
+  document.getElementById('tmDays').innerHTML = DAYL[L].map(function(d, i){ return '<span' + (i === 0 || i === 6 ? ' class="we"' : '') + '>' + d + '</span>'; }).join('');
+  document.querySelectorAll('[data-need]').forEach(function(b){ b.classList.toggle('off', !S[b.dataset.need]); });
+};
+window.onEnter = function(id, S){ if (id === 'try' && S.tried !== '0' && !HERO) { S.tried = '0'; sync(); } };
+/* the test alarm: the bar fills (and counts reps) over ~2 s, then the alarm goes quiet */
+document.addEventListener('click', function(e){
+  if (!e.target.closest('.trygo') || tryRaf) return;
+  var c = S.challenge || 'pushups', n = COUNT[c], t0 = performance.now(), D = 2200;
+  var bar = document.getElementById('tryBar'), cnt = document.getElementById('tryCnt');
+  (function step(t){
+    var p = Math.min(1, (t - t0) / D); bar.style.width = p * 100 + '%'; if (n) cnt.textContent = Math.floor(p * n) + ' / ' + n;
+    if (p < 1) tryRaf = requestAnimationFrame(step); else { tryRaf = 0; S.tried = '1'; sync(); }
+  })(t0);
+});
+</script>
+<script>
+/* ============ engine — generic, do not fork per app ============ */
+var C = JSON.parse(document.getElementById('content').textContent);
+var S = C.state, scr = {}, ORDER = [], hist = [], cur = null, Q = location.search;
+var SHOT = /[?&](shot|phone|tour)\b/.test(Q), HERO = /[?&]hero\b/.test(Q);
+/* a screen with data-aside (e.g. the paywall TODAY for the side-by-side) renders for stills but is not part of the flow */
+document.querySelectorAll('.scr').forEach(function(s){ scr[s.dataset.id] = s; if (!s.hasAttribute('data-aside')) ORDER.push(s.dataset.id); });
+if (/[?&]shot\b/.test(Q)) document.documentElement.classList.add('shot');
+if (/[?&]phone\b/.test(Q)) document.documentElement.classList.add('shot', 'phoneonly');
+if (/[?&]clear\b/.test(Q)) document.documentElement.classList.add('clear');
+var IDEAS = (C.ideas || []).length;
+
+/* ---- languages: markup is the first language; C.i18n[lang][data-t key] the others; {tokens} from C.prices[lang] ---- */
+var LANGS = C.langs || [], BASE = LANGS.length ? LANGS[0].code : 'en', LANG_DONE = BASE, BASE_LABELS = JSON.parse(JSON.stringify(C.labels || {}));
+if (!S.lang) S.lang = BASE;
+function fillP(s, l){ var P = (C.prices || {})[l] || {}; return String(s).replace(/\{(\w+)\}/g, function(m, k){ return k in P ? P[k] : m; }); }
+function applyLang(){
+  var l = S.lang || BASE; if (l === LANG_DONE) return;
+  var T = (C.i18n || {})[l] || {};
+  document.querySelectorAll('.phone [data-t]').forEach(function(el){
+    if (el._base == null) el._base = el.innerHTML;
+    el.innerHTML = l === BASE || T[el.dataset.t] == null ? el._base : fillP(T[el.dataset.t], l);
+  });
+  C.labels = JSON.parse(JSON.stringify(BASE_LABELS));
+  var LL = (C.labelsI18n || {})[l] || {}; Object.keys(LL).forEach(function(k){ C.labels[k] = LL[k]; });
+  LANG_DONE = l;
+}
+function setLang(l){
+  if (!LANGS.some(function(x){ return x.code === l; })) return;
+  S.lang = l; sync();
+  document.querySelectorAll('[data-setlang]').forEach(function(b){ b.classList.toggle('on', b.dataset.setlang === l); });
+  if (window.onLang) window.onLang(l);
+}
+
+function lab(key){ var v = S[key]; var L = C.labels[key]; if (Array.isArray(v)) return v.map(function(x){ return L && L[x] || x; }).join(', '); return (L && L[v]) || v; }
+function sync(){
+  applyLang();
+  document.querySelectorAll('[data-bind]').forEach(function(el){
+    var b = el.dataset.bind, m = b.split(':');
+    el.textContent = m[0] === 'label' ? lab(m[1]) : m[0] === 'count' ? (S[m[1]] || []).length : (S[b] == null ? '' : S[b]);
+  });
+  document.querySelectorAll('[data-pick]').forEach(function(el){ var p = el.dataset.pick.split(':'); el.classList.toggle('on', S[p[0]] === p[1]); });
+  document.querySelectorAll('[data-toggle]').forEach(function(el){ var p = el.dataset.toggle.split(':'); el.classList.toggle('on', (S[p[0]] || []).indexOf(p[1]) > -1); });
+  document.querySelectorAll('[data-requires]').forEach(function(el){ el.disabled = !(S[el.dataset.requires] || []).length; });
+  document.querySelectorAll('[data-show]').forEach(function(el){ var p = el.dataset.show.split(':'); el.style.display = String(S[p[0]]) === p[1] ? '' : 'none'; });
+  if (window.onSync) window.onSync(S);
+}
+function show(id, dir){
+  var from = scr[cur], to = scr[id]; if (!to || id === cur) return;
+  var sheet = to.classList.contains('sheet');
+  if (from){
+    from.classList.remove('is-active');
+    if (sheet) from.classList.add('under');                                   /* a sheet slides up over the screen that opened it */
+    else if (dir === 'fwd' && !from.classList.contains('sheet')) from.classList.add('is-past');
+  }
+  if (!sheet) Object.keys(scr).forEach(function(k){ var u = scr[k]; if (u !== to && u.classList.contains('under')) { u.classList.remove('under'); if (dir === 'fwd') u.classList.add('is-past'); } });
+  to.classList.remove('is-past', 'under'); to.classList.add('is-active'); cur = id;
+  paint(); if (window.onEnter) window.onEnter(id, S);
+}
+function go(id){ if (cur) hist.push(cur); show(id, 'fwd'); }
+function back(){ if (hist.length) { var p = hist.pop(); scr[cur].classList.remove('is-active'); show(p, 'back'); } }
+function jump(id){
+  Object.keys(scr).forEach(function(k){ scr[k].classList.add('nofx'); scr[k].classList.remove('is-active', 'is-past', 'under'); });
+  var i = ORDER.indexOf(id); hist = ORDER.slice(0, i < 0 ? 0 : i); cur = null;
+  ORDER.slice(0, i).forEach(function(k){ if (!scr[k].classList.contains('sheet')) scr[k].classList.add('is-past'); });
+  if (scr[id] && scr[id].classList.contains('sheet')) {                        /* jumping to a sheet: its opener stays visible under it */
+    for (var j = i - 1; j >= 0; j--) if (!scr[ORDER[j]].classList.contains('sheet')) { scr[ORDER[j]].classList.remove('is-past'); scr[ORDER[j]].classList.add('under'); break; }
+  }
+  show(id, 'jump');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ Object.keys(scr).forEach(function(k){ scr[k].classList.remove('nofx'); }); }); });
+}
+function stepBy(d){ var i = ORDER.indexOf(cur) + d; if (i >= 0 && i < ORDER.length) jump(ORDER[i]); }
+function jumpTo(id){
+  var p = document.getElementById('prototype');
+  if (p && !document.documentElement.classList.contains('appmode')) p.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
+  jump(id);
+}
+function paint(){
+  sync();
+  var c = document.getElementById('chips');
+  if (!c.childElementCount) ORDER.forEach(function(id){
+    var p = C.panel[id] || {}, b = document.createElement('button');
+    b.className = 'au-chip'; b.type = 'button'; b.dataset.id = id; b.setAttribute('role', 'tab');
+    b.innerHTML = (p.idea ? '<i>' + p.idea + '</i>' : '') + ((C.chips && C.chips[id]) || id);
+    b.onclick = function(){ jump(id); };
+    c.appendChild(b);
+  });
+  c.querySelectorAll('.au-chip').forEach(function(b){ var on = b.dataset.id === cur; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+  var d = C.panel[cur] || {t: cur, why: ''}, n = ORDER.indexOf(cur) + 1;
+  document.getElementById('panel').innerHTML =
+    (d.idea ? '<div class="au-pn-k"><i></i>Idea ' + d.idea + ' of ' + IDEAS + '</div>' : '<div class="au-pn-k au-ctx"><i></i>Context</div>') +
+    '<h3 class="au-pn-t">' + d.t + '</h3><p class="au-pn-h">' + d.why + '</p>' +
+    (d.iv ? '<div class="au-pn-o"><div class="au-lab">Potential outcome · based on Adapty data</div><div class="au-val"><mark>' + d.iv + '</mark></div><div class="au-sub">' + (d.il || '') + '</div></div>' : '') +
+    (d.also ? '<p class="au-pn-a">' + d.also + '</p>' : '') +
+    '<div class="au-pn-nav"><button type="button" onclick="stepBy(-1)"' + (n <= 1 ? ' disabled' : '') + '>‹ Previous</button><span>Screen ' + n + ' of ' + ORDER.length + '</span><button type="button" onclick="stepBy(1)"' + (n === ORDER.length ? ' disabled' : '') + '>Next ›</button></div>';
+  var ab = document.getElementById('abT'); if (ab) ab.textContent = (d.idea ? 'Idea ' + d.idea + ' of ' + IDEAS + ' · ' : '') + (d.t || '');
+}
+document.addEventListener('click', function(e){
+  var j = e.target.closest('[data-jumpto]'); if (j){ e.preventDefault(); jumpTo(j.dataset.jumpto); return; }
+  var L = e.target.closest('[data-setlang]'); if (L){ setLang(L.dataset.setlang); return; }
+  if (e.target.closest('[data-langtoggle]') && LANGS.length > 1){ var k = LANGS.findIndex(function(x){ return x.code === S.lang; }); setLang(LANGS[(k + 1) % LANGS.length].code); return; }
+  var el = e.target.closest('[data-go],[data-back],[data-pick],[data-toggle]'); if (!el) return;
+  if (el.dataset.pick){ var p = el.dataset.pick.split(':'); S[p[0]] = p[1]; sync(); if (el.dataset.advance) setTimeout(function(){ go(el.dataset.advance); }, 170); return; }
+  if (el.dataset.toggle){ var q = el.dataset.toggle.split(':'), a = S[q[0]] = S[q[0]] || [], i = a.indexOf(q[1]); if (i > -1) a.splice(i, 1); else a.push(q[1]); sync(); return; }
+  if ('back' in el.dataset) return back();
+  go(el.dataset.go);
+});
+document.querySelectorAll('[data-input]').forEach(function(inp){
+  inp.value = S[inp.dataset.input] || ''; inp.addEventListener('input', function(){ S[inp.dataset.input] = inp.value.trim() || 'there'; sync(); });
+});
+function $(id){ return document.getElementById(id); }
+
+/* hero stills, shortlist, outcome, sources — from CONTENT */
+$('heroPhones').innerHTML = (C.hero || []).map(function(id, i){
+  var pos = ['l', 'c', 'r'][i] || 'r', t = (C.chips && C.chips[id]) || id;
+  return '<button class="au-hp au-' + pos + '" data-jumpto="' + id + '" aria-label="Open ' + t + '"><img src="assets/hero/' + id + '.png" alt=""></button>';
+}).join('');
+$('ideaList').innerHTML = (C.ideas || []).map(function(r, i){
+  return '<article class="au-idea"><div class="au-num">0' + (i + 1) + '</div><div><h3>' + r.title + '</h3><p>' + r.what + '</p>' +
+    '<button type="button" class="au-lnk" data-jumpto="' + r.screen + '">See it on the screen</button></div>' +
+    '<div class="au-imp"><div class="au-v"><mark>' + r.impact + '</mark></div><div class="au-l">' + r.il + '</div></div></article>';
+}).join('');
+var O = C.outcome || {};
+$('bandNums').innerHTML =
+  (O.cr ? '<div><small>up to</small><b>' + O.cr + '</b><span>CR to purchase</span></div>' : '') +
+  (O.arpu ? '<div><small>up to</small><b>' + O.arpu + '</b><span>ARPU</span></div>' : '');
+$('bandFn').textContent = C.grounding;
+$('fine').textContent = C.grounding + ' Prepared by Adapty.';
+$('srcBody').innerHTML = C.sources.map(function(g){
+  return '<div><h4>' + g.group + '</h4><dl>' + g.items.map(function(it){ return '<dt>' + it.dt + '</dt><dd>' + it.dd + '</dd>'; }).join('') + '</dl></div>';
+}).join('');
+function openSrc(){ var d = $('srcDetails'); d.open = true; d.scrollIntoView({block: 'start'}); }
+
+/* ---- extras: language control, the paywall side by side, QR / phone view, the video ---- */
+if (LANGS.length > 1) {
+  $('langRow').hidden = false;
+  var lb = LANGS.map(function(x){ return '<button type="button" data-setlang="' + x.code + '">' + x.name + '</button>'; }).join('');
+  $('langSw').innerHTML = lb;
+  $('abLang').innerHTML = LANGS.map(function(x){ return '<button type="button" data-setlang="' + x.code + '">' + x.code.toUpperCase() + '</button>'; }).join('');
+}
+var CM = C.compare;
+if (CM && scr[CM.today] && scr[CM.proposed]) {
+  $('compare').hidden = false; $('navCompare').hidden = false;
+  $('cmpBody').innerHTML = '<div class="au-ideas-h"><p class="au-kicker">' + (CM.kicker || 'The paywall, side by side') + '</p><h2 class="au-h2">' + (CM.title || 'Today and proposed.') + (CM.sub ? ' <span>' + CM.sub + '</span>' : '') + '</h2></div>' +
+    '<div class="au-cmp"><figure><img src="assets/hero/' + CM.today + '.png" alt="Your paywall today"><figcaption>Today <span>· ' + (CM.todayCap || 'rebuilt from your recording') + '</span></figcaption></figure>' +
+    '<ol class="au-chg">' + (CM.rows || []).map(function(r){
+      return '<li><h4>' + r.h + (r.idea ? ' <i>Idea ' + r.idea + '</i>' : '') + '</h4><span class="au-was"><em>Today</em>' + r.was + '</span><span class="au-now"><em>Proposed</em>' + r.now + '</span></li>';
+    }).join('') + '</ol>' +
+    '<figure><button type="button" class="au-cmp-go" data-jumpto="' + CM.proposed + '" aria-label="Open the proposed paywall"><img src="assets/hero/' + CM.proposed + '.png" alt="The proposed paywall"></button><figcaption>Proposed <span>· tap to try it</span></figcaption></figure></div>' +
+    (CM.kept ? '<p class="au-kept">' + CM.kept + '</p>' : '');
+}
+if (C.liveUrl) { $('qrCard').hidden = false; $('qrMob').hidden = false; }
+if (/[?&]app\b/.test(Q)) {
+  var H0 = document.documentElement; H0.classList.add('appmode');
+  var openP = function(o){ H0.classList.toggle('au-open', o); $('abWhy').querySelector('em').textContent = o ? 'Close ↓' : 'Why ↑'; };
+  $('abWhy').onclick = function(){ openP(!H0.classList.contains('au-open')); };
+  $('abScrim').onclick = function(){ openP(false); };
+}
+if (C.video) {
+  var dlg = $('vid'), vel = $('vidEl'); vel.src = C.video; if (C.poster) vel.poster = C.poster; $('vidDl').href = C.video;
+  $('heroVideo').hidden = false;
+  $('heroVideo').onclick = function(){ dlg.showModal(); vel.play().catch(function(){}); };
+  $('vidX').onclick = function(){ dlg.close(); };
+  dlg.addEventListener('close', function(){ vel.pause(); });
+  dlg.addEventListener('click', function(e){ if (e.target === dlg) dlg.close(); });
+}
+
+/* ---- ?tour: a deterministic walkthrough from C.tour — tourAt(ms) paints one frame; record-video.sh records it ---- */
+function tourInit(){
+  var T = C.tour, H = document.documentElement, TR = T.transition || 360;
+  H.classList.add('tourmode', 'shot'); document.body.classList.add('nofx');
+  var SEG = T.segments, START = [], STATE = [], UNDER = [], acc = 0, st = JSON.parse(JSON.stringify(C.state));
+  SEG.forEach(function(s, i){
+    START.push(acc); acc += s.d;
+    Object.keys(s.st || {}).forEach(function(k){ st[k] = s.st[k]; }); STATE.push(JSON.parse(JSON.stringify(st)));
+    var u = null; if (scr[s.id].classList.contains('sheet')) for (var j = i - 1; j >= 0; j--) if (!scr[SEG[j].id].classList.contains('sheet')) { u = SEG[j].id; break; }
+    UNDER.push(u);
+  });
+  var TOTAL = acc, capEl = $('tCap'), tap = $('tTap'), pressed = null, popped = [];
+  $('tIntro').innerHTML = '<p class="au-eyebrow"><i></i>' + document.querySelector('.au-top-hero .au-eyebrow').textContent + '</p><h1 class="au-display">' + C.app + '</h1>' +
+    '<p class="au-lede">' + (T.introLede || document.querySelector('.au-top-hero .au-lede').innerHTML) + '</p>';
+  $('tEnd').innerHTML = '<p class="au-eyebrow"><i></i>Growth Audit · ' + C.app + '</p><h2 class="au-te-h">' + (T.endTitle || 'Five ideas, built into your own onboarding.') + '</h2>' +
+    '<div class="au-te-n">' + (O.cr ? '<div><small>up to</small><b>' + O.cr + '</b><span>CR to purchase</span></div>' : '') + (O.arpu ? '<div><small>up to</small><b>' + O.arpu + '</b><span>ARPU</span></div>' : '') + '</div>' +
+    (C.liveUrl ? '<div class="au-te-q"><img src="assets/qr-app.png" alt=""><div><b>Try it on your phone</b><span>' + C.liveUrl.replace(/^https?:\/\//, '').replace(/\/$/, '') + '</span></div></div>' : '') +
+    '<p class="au-te-f">' + C.grounding + '</p>';
+  function ease(x){ return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function easeBack(x){ var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+  function capHTML(c){
+    c = c || {k: '', t: '', l: ''};
+    return '<div class="au-tk' + (c.n ? '' : ' au-ctx') + '"><i></i>' + (c.n ? 'Idea ' + c.n + ' of ' + IDEAS : (c.k || 'Context')) + '</div><h2 class="au-tt">' + c.t + '</h2><p class="au-tl">' + (c.l || '') + '</p>' +
+      (c.o ? '<div class="au-to"><small>Potential outcome · based on Adapty data</small><b><mark>' + c.o + '</mark></b><span>' + (c.ol || '') + '</span></div>' : '');
+  }
+  function place(id, tf, z){ scr[id].style.transform = tf; scr[id].style.zIndex = z; }
+  window.TOUR_MS = TOTAL;
+  window.tourAt = function(ms){
+    ms = Math.max(0, Math.min(TOTAL - 1, ms));
+    var i = 0; while (i < SEG.length - 1 && ms >= START[i + 1]) i++;
+    var s = SEG[i], local = ms - START[i], prev = i > 0 ? SEG[i - 1] : null;
+    Object.keys(STATE[i]).forEach(function(k){ S[k] = STATE[i][k]; }); sync();
+    var moving = prev && prev.id !== s.id && local < TR, p = moving ? ease(local / TR) : 1;
+    Object.keys(scr).forEach(function(k){ scr[k].classList.remove('is-active', 'is-past', 'under'); place(k, 'translateX(100%)', 0); });
+    var B = scr[s.id];
+    if (moving) {
+      if (B.classList.contains('sheet')) { place(prev.id, 'none', 1); B.style.transform = 'translateY(' + (1 - p) * 100 + '%)'; }
+      else {
+        var slide = 'translateX(' + (-28 * p) + '%)'; place(prev.id, slide, 1); B.style.transform = 'translateX(' + (1 - p) * 100 + '%)';
+        if (UNDER[i - 1]) place(UNDER[i - 1], slide, 0);
+      }
+    } else B.style.transform = 'none';
+    B.style.zIndex = 2;
+    if (UNDER[i] && !moving) place(UNDER[i], 'none', 1);
+    /* optional reveal: s.pop scales an element in, s.reveal fades one in a beat later */
+    popped.forEach(function(e){ e.style.transform = ''; e.style.opacity = ''; }); popped = [];
+    var q = Math.max(0, Math.min(1, (local - 250) / 550));
+    if (s.pop) { var pe = B.querySelector(s.pop); if (pe) { pe.style.transform = 'scale(' + (.55 + .45 * easeBack(q)) + ')'; pe.style.opacity = Math.min(1, q * 1.6); popped.push(pe); } }
+    if (s.reveal) { var re = B.querySelector(s.reveal); if (re) { re.style.opacity = Math.max(0, Math.min(1, (local - 520) / 300)); popped.push(re); } }
+    /* caption crossfades at screen changes; waits for the intro, gives way to the end card */
+    var key = s.id, op = 1;
+    if (moving) { if (p < .5) { key = prev.id; op = 1 - p * 2; } else op = p * 2 - 1; }
+    if (capEl.dataset.k !== key) { capEl.innerHTML = capHTML(T.captions[key]); capEl.dataset.k = key; }
+    var io = ms < 1100 ? 1 : Math.max(0, 1 - (ms - 1100) / 300), eo = s.end ? Math.min(1, local / 350) : 0;
+    capEl.style.opacity = op * Math.max(0, Math.min(1, (ms - 1400) / 300)) * (1 - eo);
+    /* the finger: fades in, taps, ripples out. Selectors are scoped to the screen */
+    tap.style.opacity = 0; if (pressed) { pressed.style.opacity = ''; pressed = null; }
+    if (s.tap) {
+      var el = B.querySelector(s.tap[0]), dt = local - s.tap[1];
+      if (el && dt > -260 && dt < 420) {
+        var r = el.getBoundingClientRect();
+        tap.style.left = (r.left + r.width / 2) + 'px'; tap.style.top = (r.top + r.height / 2) + 'px';
+        if (dt < 0) { tap.style.opacity = (dt + 260) / 260 * .9; tap.style.transform = 'scale(1)'; }
+        else { tap.style.opacity = .9 * (1 - dt / 420); tap.style.transform = 'scale(' + (1 + dt / 420 * .9) + ')'; }
+        if (dt >= 0 && dt < 160) { el.style.opacity = .72; pressed = el; }
+      }
+    }
+    $('tIntro').style.opacity = T.intro === false ? 0 : io;
+    $('tEnd').style.opacity = eo;
+    $('tProg').style.width = (ms / TOTAL * 100) + '%';
+    cur = s.id;
+    return i;
+  };
+  var tm = /[?&]t=(\d+)/.exec(Q); tourAt(tm ? +tm[1] : 0);
+}
+
+/* boot: #<screen-id> deep-links a screen (shoot.sh / hero-stills.sh use it); ?lang=xx picks the language */
+(function(){
+  var lm = /[?&]lang=(\w+)/.exec(Q); if (lm) setLang(lm[1]); else setLang(S.lang);
+  var h = location.hash.slice(1);
+  jump(scr[h] ? h : ORDER[0]);
+  if (scr[h] && !SHOT && !document.documentElement.classList.contains('appmode')) setTimeout(function(){ $('prototype').scrollIntoView(); }, 0);
+  if (/[?&]tour\b/.test(Q) && C.tour) tourInit();
+})();
+</script>
+</body>
+</html>
